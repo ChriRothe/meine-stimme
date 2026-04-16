@@ -18,7 +18,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /html/
+          server-dir: /meine-stimme.info/
           exclude: |
             **/.git*
             **/.git*/**
