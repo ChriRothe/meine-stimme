@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 140" width="400" height="140">
+  <defs>
+    <!-- Warmer Gradient Hintergrund -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fff8f0"/>
+      <stop offset="100%" style="stop-color:#fef3e2"/>
+    </linearGradient>
+
+    <!-- Sprechblase Gradient -->
+    <linearGradient id="bubbleMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316"/>
+      <stop offset="100%" style="stop-color:#ea580c"/>
+    </linearGradient>
+
+    <!-- Kleine Sprechblase -->
+    <linearGradient id="bubbleSmall" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="100%" style="stop-color:#f59e0b"/>
+    </linearGradient>
+
+    <!-- Welle / Echo -->
+    <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.15"/>
+      <stop offset="100%" style="stop-color:#f97316;stop-opacity:0"/>
+    </linearGradient>
+
+    <!-- Schriftfarbe Gradient -->
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c2410c"/>
+      <stop offset="100%" style="stop-color:#9a3412"/>
+    </linearGradient>
+
+    <!-- Weicher Schatten für Sprechblase -->
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="4" stdDeviation="6" flood-color="#f97316" flood-opacity="0.25"/>
+    </filter>
+    <filter id="tinyGlow">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="#fbbf24" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Hintergrund -->
+  <rect width="400" height="140" rx="20" fill="url(#bgGrad)"/>
+
+  <!-- Dekorative Wellen (Echo der Stimme) -->
+  <ellipse cx="70" cy="65" rx="75" ry="55" fill="none" stroke="#f97316" stroke-width="1.5" stroke-opacity="0.12"/>
+  <ellipse cx="70" cy="65" rx="95" ry="70" fill="none" stroke="#f97316" stroke-width="1" stroke-opacity="0.07"/>
+
+  <!-- ===== ICON BEREICH ===== -->
+
+  <!-- Große Sprechblase (Hauptstimme) -->
+  <rect x="14" y="18" width="68" height="52" rx="18" fill="url(#bubbleMain)" filter="url(#softShadow)"/>
+  <!-- Schwanz der Sprechblase -->
+  <path d="M28 68 L18 85 L42 72" fill="url(#bubbleMain)"/>
+
+  <!-- Schallwellen-Punkte in der Sprechblase (symbolisiert Stimme) -->
+  <circle cx="35" cy="44" r="5" fill="white" fill-opacity="0.95"/>
+  <circle cx="48" cy="44" r="5" fill="white" fill-opacity="0.95"/>
+  <circle cx="61" cy="44" r="5" fill="white" fill-opacity="0.95"/>
+
+  <!-- Kleine zweite Sprechblase (Antwort / Dialog) -->
+  <rect x="62" y="8" width="44" height="34" rx="12" fill="url(#bubbleSmall)" filter="url(#tinyGlow)"/>
+  <!-- Schwanz klein oben rechts -->
+  <path d="M72 40 L68 52 L82 43" fill="url(#bubbleSmall)"/>
+  <!-- Punkte klein -->
+  <circle cx="76" cy="25" r="3.5" fill="white" fill-opacity="0.9"/>
+  <circle cx="84" cy="25" r="3.5" fill="white" fill-opacity="0.9"/>
+  <circle cx="92" cy="25" r="3.5" fill="white" fill-opacity="0.9"/>
+
+  <!-- ===== TEXT BEREICH ===== -->
+
+  <!-- "Meine" -->
+  <text
+    x="125" y="58"
+    font-family="'Nunito', 'Segoe UI', Arial, sans-serif"
+    font-size="36"
+    font-weight="400"
+    fill="#92400e"
+    letter-spacing="-0.5"
+  >Meine</text>
+
+  <!-- "Stimme" – kräftiger, wärmer -->
+  <text
+    x="125" y="100"
+    font-family="'Nunito', 'Segoe UI', Arial, sans-serif"
+    font-size="44"
+    font-weight="900"
+    fill="url(#textGrad)"
+    letter-spacing="-1"
+  >Stimme</text>
+
+  <!-- Dekorative Unterlinie unter "Stimme" -->
+  <path d="M125 108 Q210 116 320 106" stroke="#f97316" stroke-width="3" fill="none" stroke-linecap="round" stroke-opacity="0.6"/>
+
+  <!-- Kleiner Tagline-Text -->
+  <text
+    x="126" y="126"
+    font-family="'Nunito', 'Segoe UI', Arial, sans-serif"
+    font-size="12"
+    font-weight="600"
+    fill="#b45309"
+    fill-opacity="0.7"
+    letter-spacing="1.5"
+  >KOMMUNIKATIONSHILFE</text>
+</svg>

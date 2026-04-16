@@ -1,0 +1,21 @@
+# Datenbankzugangsdaten – NIEMALS ins Repository!
+api/config.php
+
+# Backup-Dateien
+*.zip
+*.bak
+*_backup
+
+# Alte Versionen / Entwicklungsdateien
+index_*.html
+meine-stimme-v1/
+{api,sql,assets}/
+test.php
+hallo.php
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+*.swp

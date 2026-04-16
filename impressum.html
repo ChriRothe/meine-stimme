@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impressum & Datenschutz – Meine Stimme</title>
+<style>
+  /* Lokale Schriftart – kein externer Aufruf */
+  @font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/nunito-v26-latin-regular.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('assets/fonts/nunito-v26-latin-700.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url('assets/fonts/nunito-v26-latin-900.woff2') format('woff2');
+  }
+
+  :root {
+    --primary: #2563eb;
+    --primary-light: #dbeafe;
+    --text: #1e293b;
+    --text-soft: #64748b;
+    --border: #e2e8f0;
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 1rem;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .logo-svg { display: flex; align-items: center; }
+
+  .btn-back {
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid var(--border);
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-soft);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { border-color: var(--primary); color: var(--primary); }
+
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  .page-title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+
+  .page-subtitle {
+    color: var(--text-soft);
+    font-size: 1rem;
+    margin-bottom: 36px;
+    font-weight: 600;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 2px solid var(--border);
+    padding: 28px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 18px 0 6px;
+  }
+
+  p { margin-bottom: 12px; color: var(--text); }
+  p:last-child { margin-bottom: 0; }
+
+  .highlight-box {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    font-weight: 600;
+    color: #1e3a8a;
+    font-size: 0.95rem;
+  }
+
+  .green-box {
+    background: #dcfce7;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    font-weight: 600;
+    color: #14532d;
+    font-size: 0.95rem;
+  }
+
+  address {
+    font-style: normal;
+    line-height: 1.8;
+  }
+
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .meta {
+    text-align: center;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border);
+  }
+
+  /* PLACEHOLDER Hinweis */
+  .todo {
+    background: #fef3c7;
+    border: 2px dashed #f59e0b;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #92400e;
+    margin: 8px 0;
+  }
+  .todo::before { content: "✏️ AUSFÜLLEN: "; }
+
+  @media (max-width: 600px) {
+    main { padding: 20px 16px 48px; }
+    .card { padding: 20px 18px; }
+    .page-title { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-svg">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 56" width="180" height="50" aria-label="Meine Stimme">
+      <defs>
+        <linearGradient id="bG" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#3b82f6"/><stop offset="100%" style="stop-color:#1d4ed8"/>
+        </linearGradient>
+        <linearGradient id="bS" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#93c5fd"/><stop offset="100%" style="stop-color:#60a5fa"/>
+        </linearGradient>
+        <linearGradient id="tG" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#1d4ed8"/><stop offset="100%" style="stop-color:#1e3a8a"/>
+        </linearGradient>
+        <filter id="ss"><feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="#3b82f6" flood-opacity="0.3"/></filter>
+      </defs>
+      <rect x="4" y="4" width="44" height="34" rx="12" fill="url(#bG)" filter="url(#ss)"/>
+      <path d="M12 37 L8 48 L22 40" fill="url(#bG)"/>
+      <circle cx="18" cy="21" r="4" fill="white" fill-opacity="0.95"/>
+      <circle cx="26" cy="21" r="4" fill="white" fill-opacity="0.95"/>
+      <circle cx="34" cy="21" r="4" fill="white" fill-opacity="0.95"/>
+      <rect x="36" y="1" width="28" height="22" rx="8" fill="url(#bS)"/>
+      <path d="M42 22 L39 30 L50 24" fill="url(#bS)"/>
+      <circle cx="46" cy="12" r="2.5" fill="white" fill-opacity="0.9"/>
+      <circle cx="52" cy="12" r="2.5" fill="white" fill-opacity="0.9"/>
+      <circle cx="58" cy="12" r="2.5" fill="white" fill-opacity="0.9"/>
+      <text x="76" y="22" font-family="'Nunito',sans-serif" font-size="15" font-weight="400" fill="#3b82f6">Meine</text>
+      <text x="76" y="46" font-family="'Nunito',sans-serif" font-size="24" font-weight="900" fill="url(#tG)" letter-spacing="-0.5">Stimme</text>
+      <path d="M76 50 Q140 55 230 49" stroke="#3b82f6" stroke-width="2" fill="none" stroke-linecap="round" stroke-opacity="0.5"/>
+    </svg>
+  </div>
+  <a href="index.html" class="btn-back">← Zurück zur App</a>
+</header>
+
+<main>
+  <div class="page-title">Impressum & Datenschutz</div>
+  <div class="page-subtitle">Rechtliche Informationen zu „Meine Stimme"</div>
+
+  <!-- ===== IMPRESSUM ===== -->
+  <div class="card">
+    <div class="card-title">📋 Impressum</div>
+    <p>Angaben gemäß § 5 TMG (Telemediengesetz)</p>
+
+    <h3>Betreiber dieser Website</h3>
+   
+    <address>
+      <strong>Christian Rothe</strong><br>
+      Strausbergstr. 47<br>
+      87527 Sonthofen<br>
+      Deutschland
+    </address>
+
+    <h3>Kontakt</h3>
+    <p>
+      E-Mail: <a href="mailto:info@meine-stimme.info">info@meine-stimme.info</a><br>
+    </p>
+
+    <h3>Hinweis zum Zweck dieser Website</h3>
+    <p>
+      „Meine Stimme" ist ein <strong>nicht-kommerzielles, privates Hilfsprojekt</strong>.
+      Die Anwendung dient ausschließlich als Kommunikationshilfe für Menschen mit
+      Sprech- oder Spracheinschränkungen, zum Beispiel nach einem Schlaganfall.
+      Es werden keine wirtschaftlichen Zwecke verfolgt, kein Entgelt erhoben und
+      keine Werbung geschaltet.
+    </p>
+
+    <h3>Haftungsausschluss</h3>
+    <p>
+      Die bereitgestellten Inhalte dienen der allgemeinen Kommunikationsunterstützung
+      und ersetzen keine medizinische oder therapeutische Beratung. Für die Richtigkeit,
+      Vollständigkeit und Aktualität der Inhalte wird keine Gewähr übernommen.
+    </p>
+  </div>
+
+  <!-- ===== DATENSCHUTZ ===== -->
+  <div class="card">
+    <div class="card-title">🔒 Datenschutzerklärung</div>
+    <p>
+      Der Schutz Ihrer persönlichen Daten ist uns wichtig. Diese Datenschutzerklärung
+      informiert darüber, welche Daten bei der Nutzung von „Meine Stimme" erhoben
+      werden und wie damit umgegangen wird.
+    </p>
+
+    <div class="green-box">
+      ✅ Kurzfassung: Diese App erhebt keine personenbezogenen Daten,
+      setzt keine Cookies, verwendet kein Tracking und gibt keine Daten
+      an Dritte weiter.
+    </div>
+
+    <h3>Verantwortliche Stelle</h3>
+    <p>
+      Verantwortlich im Sinne der DSGVO ist der oben genannte Betreiber dieser Website.
+    </p>
+
+    <h3>Welche Daten werden erhoben?</h3>
+    <p>
+      Bei der Nutzung der App werden <strong>keine personenbezogenen Daten</strong> erhoben,
+      gespeichert oder verarbeitet. Konkret gilt:
+    </p>
+    <ul style="margin: 8px 0 12px 20px; line-height: 2;">
+      <li>Kein Benutzerkonto, keine Registrierung</li>
+      <li>Keine Cookies</li>
+      <li>Kein Tracking oder Analyse-Tools (z.&nbsp;B. kein Google Analytics)</li>
+      <li>Keine Weitergabe von Daten an Dritte</li>
+      <li>Eingetippte oder ausgewählte Texte verlassen das Gerät nicht</li>
+    </ul>
+
+    <h3>Serverprotokolle (Hosting)</h3>
+    <p>
+      Der Webserver, auf dem „Meine Stimme" gehostet wird (ALL-INKL.COM,
+      Betreiber: neue medien münnich GmbH, Deutschland), speichert beim Abruf
+      von Seiten automatisch technische Zugriffsdaten in sogenannten Server-Logs.
+      Dazu gehören: IP-Adresse, Datum und Uhrzeit des Abrufs, aufgerufene Seite
+      sowie der verwendete Browser. Diese Daten werden ausschließlich zur
+      Sicherstellung des Betriebs und zur Fehleranalyse genutzt und nicht
+      mit anderen Daten zusammengeführt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
+    </p>
+
+    <h3>Nutzungsstatistiken</h3>
+    <p>
+      Es werden anonyme Nutzungsstatistiken gespeichert, um häufig verwendete Wörter und Kommunikationspfade zu
+      verbessern (Lernfunktion). Dabei werden <strong>ausschließlich anonyme
+      Nutzungsdaten</strong> erfasst (z.&nbsp;B. „Schaltfläche X wurde N-mal gedrückt").
+      Es ist keinerlei Rückschluss auf einzelne Personen möglich.
+      Es werden keine Inhalte der eingegebenen Texte gespeichert.
+    </p>
+
+    <h3>Schriftarten</h3>
+    <p>
+      Diese Website verwendet die Schriftart „Nunito", die <strong>lokal auf dem
+      Webserver gespeichert</strong> ist. Es findet keine Verbindung zu externen
+      Schriftarten-Diensten (z.&nbsp;B. Google Fonts) statt. Beim Laden der Seite
+      werden daher keine Daten an Dritte übermittelt.
+    </p>
+
+    <h3>Text-to-Speech (Vorlesen)</h3>
+    <p>
+      Die Vorlesefunktion nutzt die im Browser eingebaute Web Speech API.
+      Die Verarbeitung erfolgt <strong>vollständig lokal auf dem Endgerät</strong>
+      des Nutzers. Eingegebene Texte werden nicht an externe Server übermittelt.
+    </p>
+
+    <h3>Ihre Rechte (DSGVO)</h3>
+    <p>
+      Da keine personenbezogenen Daten erhoben werden, können die üblichen
+      DSGVO-Rechte (Auskunft, Berichtigung, Löschung) mangels vorhandener
+      Daten nicht ausgeübt werden. Sollten Sie dennoch Fragen zum Datenschutz
+      haben, wenden Sie sich bitte an die oben genannte Kontaktadresse.
+    </p>
+
+    </div>
+
+  <!-- ===== OPEN SOURCE / LIZENZEN ===== -->
+  <div class="card">
+    <div class="card-title">⚖️ Verwendete Technologien & Lizenzen</div>
+    <p>
+      „Meine Stimme" wurde entwickelt mit ausschließlich freien und
+      lizenzfreien Technologien:
+    </p>
+    <ul style="margin: 8px 0 12px 20px; line-height: 2;">
+      <li><strong>HTML5, CSS3, JavaScript</strong> – Web-Standardtechnologien, keine Lizenz erforderlich</li>
+      <li><strong>PHP &amp; MySQL/MariaDB</strong> – Open Source (GPL / LGPL)</li>
+      <li><strong>Schriftart „Nunito"</strong> – SIL Open Font License 1.1 (kostenfrei nutzbar, auch lokal)</li>
+      <li><strong>Web Speech API</strong> – W3C-Standard, im Browser eingebaut, keine externe Abhängigkeit</li>
+      <li><strong>Hosting: ALL-INKL.COM</strong> – neue medien münnich GmbH, 02742 Friedersdorf</li>
+    </ul>
+    <p>
+      Es werden keine kommerziellen Bibliotheken, Frameworks mit Lizenzkosten
+      oder proprietäre Dienste verwendet.
+    </p>
+  </div>
+
+  <div class="meta">
+    <p>Stand: <span id="stand"></span> &nbsp;·&nbsp; „Meine Stimme" – eine nicht-kommerzielle Kommunikationshilfe</p>
+    <p style="margin-top:6px"><a href="index.html">← Zurück zur App</a></p>
+  </div>
+</main>
+
+<script>
+  // Aktuelles Jahr für "Stand"
+  const d = new Date();
+  document.getElementById('stand').textContent =
+    d.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+</script>
+</body>
+</html>

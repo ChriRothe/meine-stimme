@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2563eb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Meine Stimme">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/assets/icon-192.svg">
+<title>Meine Stimme</title>
+<style>
+  /* Lokale Schriftart – kein externer Aufruf */
+  @font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/nunito-v26-latin-regular.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('assets/fonts/nunito-v26-latin-600.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('assets/fonts/nunito-v26-latin-700.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('assets/fonts/nunito-v26-latin-800.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url('assets/fonts/nunito-v26-latin-900.woff2') format('woff2');
+  }
+</style>
+<style>
+  :root {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #dbeafe;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --text: #1e293b;
+    --text-soft: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+    --radius: 20px;
+    --radius-sm: 12px;
+
+    /* Größenskalierung – wird per JS angepasst */
+    --scale: 1;
+    --key-h: 62px;
+    --key-min-w: 62px;
+    --key-max-w: 80px;
+    --btn-round: 54px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0ea5e9 100%);
+    border-bottom: none;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(37,99,235,0.4);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .impressum-link {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+  .impressum-link:hover { color: white; }
+
+  .btn-speak {
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(22,163,74,0.8);
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-speak:not([disabled]):hover { background: #16a34a; border-color: #16a34a; transform: scale(1.05); }
+  .btn-speak:not([disabled]):active { transform: scale(0.92); }
+  .btn-speak[disabled] { opacity: 0.35; cursor: default; }
+  .btn-speak.speaking {
+    background: #16a34a; color: white; border-color: #16a34a;
+    animation: pulse-green 0.8s infinite;
+  }
+  @keyframes pulse-green {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(22,163,74,0); }
+  }
+
+  /* API-Ladeanzeige */
+  .loading-indicator {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-soft);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .api-badge {
+    font-size: 0.7rem;
+    background: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-weight: 700;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+  .api-badge.offline {
+    background: #fef3c7; color: #92400e; border-color: #fde68a;
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 8px;
+  }
+
+  .nav-tab {
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.15);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(4px);
+  }
+  .nav-tab.active {
+    background: white;
+    border-color: white;
+    color: var(--primary-dark);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .nav-tab:hover:not(.active) {
+    background: rgba(255,255,255,0.25);
+    color: white;
+  }
+
+  /* OUTPUT BAR */
+  .output-bar {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 100%);
+    border-bottom: none;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 70px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(29,78,216,0.3);
+  }
+
+  .output-text {
+    flex: 1;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: white;
+    min-height: 36px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.25);
+    word-break: break-word;
+    line-height: 1.4;
+    backdrop-filter: blur(4px);
+  }
+
+  .output-text.has-text {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.4);
+  }
+  .output-placeholder { color: rgba(255,255,255,0.5); font-weight: 400; font-size: 1.1rem; }
+
+  .btn-clear {
+    width: var(--btn-round); height: var(--btn-round);
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: rgba(220,38,38,0.7);
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-clear:hover { background: var(--red); border-color: var(--red); transform: scale(1.05); }
+  .btn-clear:active { transform: scale(0.92); }
+
+  .btn-backspace {
+    width: var(--btn-round); height: var(--btn-round);
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: rgba(217,119,6,0.7);
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-backspace:hover { background: var(--amber); border-color: var(--amber); transform: scale(1.05); }
+  .btn-backspace:active { transform: scale(0.92); }
+
+  /* MAIN CONTENT */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+  }
+
+  /* ===== KEYBOARD VIEW ===== */
+  #view-keyboard { display: none; }
+  #view-keyboard.active {
+    display: flex; flex-direction: column; gap: 12px;
+    background: #1e293b;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: -4px;
+  }
+
+  .suggestions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-bottom: 4px;
+    padding-bottom: 8px;
+    width: 100%;
+    min-width: 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+  .suggestions::-webkit-scrollbar { display: none; }
+  .suggestions .suggestion-chip { flex-shrink: 0; scroll-snap-align: start; }
+
+  .suggestion-chip {
+    padding: 10px 18px;
+    border-radius: 50px;
+    background: rgba(59,130,246,0.2);
+    border: 2px solid rgba(59,130,246,0.5);
+    color: #93c5fd;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .suggestion-chip:hover { background: #3b82f6; color: white; border-color: #3b82f6; }
+  .suggestion-chip:active { transform: scale(0.95); }
+
+  .suggestion-chip.completion-chip {
+    background: rgba(217,119,6,0.2);
+    border-color: rgba(217,119,6,0.5);
+    color: #fbbf24;
+  }
+  .suggestion-chip.completion-chip:hover { background: var(--amber); color: white; border-color: var(--amber); }
+
+  .size-slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.7);
+  }
+  #size-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 90px;
+    height: 6px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.3);
+    outline: none;
+    cursor: pointer;
+  }
+  #size-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  #size-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: none;
+  }
+
+  .keyboard-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .key {
+    height: var(--key-h);
+    min-width: var(--key-min-w);
+    flex: 1;
+    max-width: var(--key-max-w);
+    border-radius: var(--radius-sm);
+    border: 1px solid #334155;
+    background: #334155;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 0 #1e293b, 0 4px 8px rgba(0,0,0,0.3);
+    transition: all 0.1s;
+    user-select: none;
+  }
+  .key:hover { background: #3b82f6; border-color: #3b82f6; color: white; }
+  .key:active { transform: translateY(2px); box-shadow: 0 1px 0 #1e293b; background: #2563eb; color: white; border-color: #2563eb; }
+
+  .key.space {
+    flex: 3;
+    max-width: 300px;
+    font-size: 1rem;
+    color: #94a3b8;
+    background: #253347;
+    border-color: #2d3f55;
+  }
+  .key.space:active { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(2px); }
+
+  .key.backspace-key {
+    background: #422006;
+    border-color: #78350f;
+    color: #fbbf24;
+    font-size: 1.5rem;
+    box-shadow: 0 3px 0 #1a0e02, 0 4px 8px rgba(0,0,0,0.3);
+  }
+  .key.backspace-key:active { background: #d97706; color: white; transform: translateY(2px); box-shadow: 0 1px 0 #1a0e02; }
+
+  .key.enter-key {
+    background: #1e3a5f;
+    border-color: #2563eb;
+    color: #93c5fd;
+    flex: 1.5;
+    font-size: 1rem;
+    box-shadow: 0 3px 0 #0f1f36, 0 4px 8px rgba(0,0,0,0.3);
+  }
+  .key.enter-key:active { background: #2563eb; color: white; transform: translateY(2px); box-shadow: 0 1px 0 #0f1f36; }
+
+  /* ===== THEMES VIEW ===== */
+  #view-themes { display: none; }
+  #view-themes.active { display: flex; flex-direction: column; gap: 16px; }
+
+  .themes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .theme-card {
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    min-height: 120px;
+    justify-content: center;
+    user-select: none;
+  }
+  .theme-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.15); }
+  .theme-card:active { transform: scale(0.96); box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+
+  .theme-card .icon { font-size: 2.8rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
+  .theme-card .label { font-size: 1.2rem; font-weight: 800; }
+  .theme-card .desc { font-size: 0.85rem; font-weight: 600; opacity: 0.75; }
+
+  .theme-food    { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); color: #9a3412; box-shadow: 0 6px 20px rgba(249,115,22,0.15); }
+  .theme-food:hover { background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%); }
+  .theme-social  { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); color: #14532d; box-shadow: 0 6px 20px rgba(22,163,74,0.15); }
+  .theme-social:hover { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); }
+  .theme-hygiene { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); color: #075985; box-shadow: 0 6px 20px rgba(2,132,199,0.15); }
+  .theme-hygiene:hover { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); }
+  .theme-pain    { background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); color: #9f1239; box-shadow: 0 6px 20px rgba(244,63,94,0.15); }
+  .theme-pain:hover { background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%); }
+  .theme-feelings{ background: linear-gradient(135deg, #fdf4ff 0%, #f3e8ff 100%); color: #6b21a8; box-shadow: 0 6px 20px rgba(168,85,247,0.15); }
+  .theme-feelings:hover { background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); }
+
+  /* ===== CONTEXT PANEL ===== */
+  #view-context { display: none; }
+  #view-context.active { display: flex; flex-direction: column; gap: 14px; }
+
+  .context-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .btn-back {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-back:hover { background: var(--primary); color: white; border-color: var(--primary); }
+  .btn-back:active { transform: scale(0.92); }
+
+  .context-title { font-size: 1.3rem; font-weight: 800; color: var(--text); }
+  .context-subtitle { font-size: 0.9rem; color: var(--text-soft); font-weight: 600; }
+
+  .context-phase-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0 4px;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .options-grid.two-col { grid-template-columns: 1fr 1fr; }
+
+  .option-btn {
+    padding: 20px 18px;
+    border-radius: var(--radius);
+    border: 3px solid var(--border);
+    background: var(--surface);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow);
+    transition: all 0.18s;
+    user-select: none;
+    line-height: 1.35;
+  }
+  .option-btn .opt-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .option-btn:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .option-btn:active { transform: scale(0.97) translateY(0); }
+
+  /* YES / NO branching */
+  .yesno-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 4px;
+  }
+
+  .yesno-question {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    padding: 16px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    line-height: 1.4;
+  }
+  .yesno-question .q-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+  .btn-yes {
+    padding: 28px 20px;
+    border-radius: var(--radius);
+    border: 3px solid var(--green);
+    background: var(--green-light);
+    color: var(--green);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    cursor: pointer;
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    box-shadow: var(--shadow);
+    transition: all 0.18s;
+    user-select: none;
+  }
+  .btn-yes:hover { background: var(--green); color: white; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .btn-yes:active { transform: scale(0.96); }
+
+  .btn-no {
+    padding: 28px 20px;
+    border-radius: var(--radius);
+    border: 3px solid var(--red);
+    background: var(--red-light);
+    color: var(--red);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    cursor: pointer;
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    box-shadow: var(--shadow);
+    transition: all 0.18s;
+    user-select: none;
+  }
+  .btn-no:hover { background: var(--red); color: white; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .btn-no:active { transform: scale(0.96); }
+
+  .btn-icon-large { font-size: 2.4rem; }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 0 4px;
+  }
+  .breadcrumb-item {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-soft);
+  }
+  .breadcrumb-item.current { color: var(--primary); }
+  .breadcrumb-sep { color: var(--border); font-size: 0.9rem; }
+
+  /* Final message display */
+  .final-msg {
+    background: var(--primary-light);
+    border: 3px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+  }
+  .final-msg .msg-icon { font-size: 3rem; margin-bottom: 10px; }
+  .final-msg .msg-text { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); line-height: 1.4; }
+
+  .btn-vorlesen {
+    width: 100%;
+    padding: 22px;
+    border-radius: var(--radius);
+    border: 3px solid var(--green);
+    background: var(--green);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    transition: all 0.15s;
+    box-shadow: 0 4px 20px rgba(22,163,74,0.4);
+    animation: pulse-vorlesen 1.8s ease-in-out infinite;
+  }
+  .btn-vorlesen:hover { background: #15803d; border-color: #15803d; transform: translateY(-1px); animation: none; }
+  .btn-vorlesen:active { transform: scale(0.97); animation: none; }
+  @keyframes pulse-vorlesen {
+    0%, 100% { box-shadow: 0 4px 20px rgba(22,163,74,0.4); }
+    50% { box-shadow: 0 4px 32px rgba(22,163,74,0.75); }
+  }
+
+  .btn-restart {
+    width: 100%;
+    padding: 18px;
+    border-radius: var(--radius);
+    border: 3px solid var(--primary);
+    background: var(--primary);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: all 0.15s;
+    box-shadow: var(--shadow);
+  }
+  .btn-restart:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn-restart:active { transform: scale(0.97); }
+
+  /* Scroll */
+  .main::-webkit-scrollbar { width: 6px; }
+  .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+  /* Fade-in animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeIn 0.25s ease forwards; }
+
+  /* ===== QUERFORMAT-HINWEIS OVERLAY ===== */
+  #rotate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--primary);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 32px;
+    text-align: center;
+  }
+  #rotate-overlay.visible { display: flex; }
+
+  .rotate-icon {
+    font-size: 5rem;
+    animation: rotateHint 2s ease-in-out infinite;
+  }
+  @keyframes rotateHint {
+    0%, 100% { transform: rotate(0deg); }
+    40%       { transform: rotate(90deg); }
+    60%       { transform: rotate(90deg); }
+  }
+  .rotate-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: white;
+    line-height: 1.3;
+  }
+  .rotate-sub {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 600;
+    max-width: 280px;
+  }
+
+  /* ===== RESPONSIVE – Querformat Handy (landscape, schmal) ===== */
+  @media (max-height: 500px) and (orientation: landscape) {
+    header { padding: 8px 14px; }
+    .logo-svg svg { width: 140px; height: 38px; }
+    .nav-tab { padding: 7px 12px; font-size: 0.85rem; }
+    .output-bar { padding: 8px 14px; min-height: 52px; }
+    .output-text { font-size: 1.05rem; }
+    .btn-speak, .btn-backspace, .btn-clear { width: 44px; height: 44px; font-size: 1.1rem; }
+    .main { padding: 8px 14px; }
+    .key { height: 46px; font-size: 1.1rem; }
+    .keyboard-grid { gap: 5px; }
+    .keyboard-row { gap: 5px; }
+    .suggestions { gap: 6px; margin-bottom: 2px; }
+    .suggestion-chip { padding: 7px 12px; font-size: 0.95rem; }
+    .theme-card { min-height: 80px; padding: 12px; gap: 6px; }
+    .theme-card .icon { font-size: 1.8rem; }
+    .theme-card .label { font-size: 1rem; }
+    .theme-card .desc { display: none; }
+    .option-btn { padding: 12px 14px; font-size: 1rem; }
+    .btn-yes, .btn-no { padding: 16px 12px; font-size: 1.4rem; }
+  }
+
+  /* ===== RESPONSIVE – Tablet Hochformat ===== */
+  @media (max-width: 700px) and (orientation: portrait) {
+    .nav-tab { padding: 9px 14px; font-size: 0.9rem; }
+    .key { height: 56px; font-size: 1.25rem; }
+    .output-text { font-size: 1.15rem; }
+    .themes-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<!-- Querformat-Hinweis -->
+<div id="rotate-overlay">
+  <div class="rotate-icon">📱</div>
+  <div class="rotate-title">Bitte drehen Sie Ihr Gerät</div>
+  <div class="rotate-sub">„Meine Stimme" funktioniert am besten im Querformat</div>
+</div>
+
+<header>
+  <div class="logo-svg" onclick="goHome()" style="cursor:pointer" title="Zur Startansicht">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 56" width="200" height="56" aria-label="Meine Stimme">
+      <defs>
+        <filter id="ss"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.25)" flood-opacity="1"/></filter>
+      </defs>
+      <!-- Große Sprechblase -->
+      <rect x="4" y="4" width="44" height="34" rx="12" fill="rgba(255,255,255,0.25)" filter="url(#ss)" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+      <path d="M12 37 L8 48 L22 40" fill="rgba(255,255,255,0.25)"/>
+      <circle cx="18" cy="21" r="4" fill="white" fill-opacity="0.95"/>
+      <circle cx="26" cy="21" r="4" fill="white" fill-opacity="0.95"/>
+      <circle cx="34" cy="21" r="4" fill="white" fill-opacity="0.95"/>
+      <!-- Kleine Sprechblase -->
+      <rect x="36" y="1" width="28" height="22" rx="8" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <path d="M42 22 L39 30 L50 24" fill="rgba(255,255,255,0.15)"/>
+      <circle cx="46" cy="12" r="2.5" fill="white" fill-opacity="0.9"/>
+      <circle cx="52" cy="12" r="2.5" fill="white" fill-opacity="0.9"/>
+      <circle cx="58" cy="12" r="2.5" fill="white" fill-opacity="0.9"/>
+      <!-- Text -->
+      <text x="76" y="22" font-family="'Nunito',sans-serif" font-size="15" font-weight="400" fill="rgba(255,255,255,0.8)">Meine</text>
+      <text x="76" y="46" font-family="'Nunito',sans-serif" font-size="24" font-weight="900" fill="white" letter-spacing="-0.5">Stimme</text>
+      <path d="M76 50 Q140 55 230 49" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="nav-tabs">
+      <button class="nav-tab" onclick="switchTab('keyboard')" id="tab-keyboard">⌨️ Tippen</button>
+      <button class="nav-tab active" onclick="switchTab('themes')" id="tab-themes">💬 Themen</button>
+    </div>
+    <div class="size-slider-wrap" title="Schrift- und Tastengröße anpassen">
+      <span style="font-size:0.85rem;opacity:0.6">🔡</span>
+      <input type="range" id="size-slider" min="80" max="150" value="100" step="5">
+      <span style="font-size:1.1rem;opacity:0.6">🔠</span>
+    </div>
+    <a href="impressum.html" class="impressum-link">Impressum</a>
+  </div>
+</header>
+
+<div class="output-bar">
+  <div class="output-text" id="output-display">
+    <span class="output-placeholder">Hier erscheint Ihre Nachricht …</span>
+  </div>
+  <button class="btn-speak" id="btn-speak" onclick="speakText()" title="Vorlesen" disabled>🔊</button>
+  <button class="btn-backspace" onclick="doBackspace()" title="Letztes Zeichen löschen">⌫</button>
+  <button class="btn-clear" onclick="doClear()" title="Alles löschen">✕</button>
+</div>
+
+<div class="main">
+
+  <!-- KEYBOARD VIEW -->
+  <div id="view-keyboard">
+    <div class="suggestions" id="suggestions">
+      <!-- filled dynamically -->
+    </div>
+    <div class="keyboard-grid">
+      <div class="keyboard-row">
+        <button class="key" onclick="typeChar('Q')">Q</button>
+        <button class="key" onclick="typeChar('W')">W</button>
+        <button class="key" onclick="typeChar('E')">E</button>
+        <button class="key" onclick="typeChar('R')">R</button>
+        <button class="key" onclick="typeChar('T')">T</button>
+        <button class="key" onclick="typeChar('Z')">Z</button>
+        <button class="key" onclick="typeChar('U')">U</button>
+        <button class="key" onclick="typeChar('I')">I</button>
+        <button class="key" onclick="typeChar('O')">O</button>
+        <button class="key" onclick="typeChar('P')">P</button>
+      </div>
+      <div class="keyboard-row">
+        <button class="key" onclick="typeChar('A')">A</button>
+        <button class="key" onclick="typeChar('S')">S</button>
+        <button class="key" onclick="typeChar('D')">D</button>
+        <button class="key" onclick="typeChar('F')">F</button>
+        <button class="key" onclick="typeChar('G')">G</button>
+        <button class="key" onclick="typeChar('H')">H</button>
+        <button class="key" onclick="typeChar('J')">J</button>
+        <button class="key" onclick="typeChar('K')">K</button>
+        <button class="key" onclick="typeChar('L')">L</button>
+      </div>
+      <div class="keyboard-row">
+        <button class="key" onclick="typeChar('Ö')">Ö</button>
+        <button class="key" onclick="typeChar('Ä')">Ä</button>
+        <button class="key" onclick="typeChar('Ü')">Ü</button>
+        <button class="key" onclick="typeChar('Y')">Y</button>
+        <button class="key" onclick="typeChar('X')">X</button>
+        <button class="key" onclick="typeChar('C')">C</button>
+        <button class="key" onclick="typeChar('V')">V</button>
+        <button class="key" onclick="typeChar('B')">B</button>
+        <button class="key" onclick="typeChar('N')">N</button>
+        <button class="key" onclick="typeChar('M')">M</button>
+      </div>
+      <div class="keyboard-row">
+        <button class="key" onclick="typeChar('1')">1</button>
+        <button class="key" onclick="typeChar('2')">2</button>
+        <button class="key" onclick="typeChar('3')">3</button>
+        <button class="key" onclick="typeChar('.')">.</button>
+        <button class="key space" onclick="typeChar(' ')">LEER&shy;TASTE</button>
+        <button class="key" onclick="typeChar(','">,</button>
+        <button class="key" onclick="typeChar('?')">?</button>
+        <button class="key" onclick="typeChar('!')">!</button>
+        <button class="key backspace-key" onclick="doBackspace()">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THEMES VIEW -->
+  <div id="view-themes" class="active">
+    <div class="themes-grid fade-in">
+      <div class="theme-card theme-food" onclick="openTheme('food')">
+        <div class="icon">🍽️</div>
+        <div class="label">Essen & Trinken</div>
+        <div class="desc">Hunger, Durst, Wünsche</div>
+      </div>
+      <div class="theme-card theme-social" onclick="openTheme('social')">
+        <div class="icon">👥</div>
+        <div class="label">Soziales</div>
+        <div class="desc">Gemeinschaft, Familie</div>
+      </div>
+      <div class="theme-card theme-hygiene" onclick="openTheme('hygiene')">
+        <div class="icon">🚿</div>
+        <div class="label">Körperhygiene</div>
+        <div class="desc">Waschen, Pflege, Toilette</div>
+      </div>
+      <div class="theme-card theme-pain" onclick="openTheme('pain')">
+        <div class="icon">😣</div>
+        <div class="label">Schmerzen</div>
+        <div class="desc">Lokalisieren & beschreiben</div>
+      </div>
+      <div class="theme-card theme-feelings" onclick="openTheme('feelings')">
+        <div class="icon">💛</div>
+        <div class="label">Gefühle</div>
+        <div class="desc">Stimmung & Wohlbefinden</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEXT VIEW -->
+  <div id="view-context">
+    <div class="context-header">
+      <button class="btn-back" onclick="goBack()" id="btn-back-main">←</button>
+      <div>
+        <div class="context-title" id="ctx-title">Essen & Trinken</div>
+        <div class="breadcrumb" id="ctx-breadcrumb"></div>
+      </div>
+    </div>
+    <div id="ctx-content"></div>
+  </div>
+
+</div>
+
+<script>
+// ===== STATE =====
+let outputText = '';
+let currentTheme = null;
+let contextPath = [];
+let currentStep = null;
+
+// ===== WORD TREE (Satzbaum) =====
+// Basis-Wortbaum: hartcodierte Standardvorschläge als Fallback.
+// Die DB-Lernfunktion ergänzt und priorisiert diese mit der Zeit.
+const wordTree = {
+
+  // Satzanfänge
+  '': ['Ich', 'Bitte', 'Danke', 'Hallo', 'Hilfe', 'Ja', 'Nein', 'Mir', 'Könnten', 'Es', 'Heute', 'Leider'],
+
+  // Nach "Ich"
+  'ICH': ['möchte', 'habe', 'bin', 'fühle', 'brauche', 'freue', 'verstehe', 'weiß', 'denke', 'sehe', 'höre', 'kann'],
+  'ICH MÖCHTE': ['bitte', 'gerne', 'etwas', 'nicht', 'schlafen', 'essen', 'trinken', 'reden', 'ruhen', 'aufstehen', 'nach', 'Hilfe'],
+  'ICH HABE': ['Hunger', 'Durst', 'Schmerzen', 'Angst', 'Fieber', 'eine', 'kein', 'keine', 'Kopfschmerzen', 'Bauchschmerzen', 'Übelkeit'],
+  'ICH BIN': ['müde', 'traurig', 'froh', 'krank', 'hungrig', 'durstig', 'okay', 'erschöpft', 'unruhig', 'ängstlich', 'glücklich', 'dankbar'],
+  'ICH FÜHLE': ['mich', 'Schmerzen', 'nichts'],
+  'ICH FÜHLE MICH': ['gut', 'schlecht', 'müde', 'unwohl', 'besser', 'nicht', 'schwindelig', 'schwach', 'wohl', 'einsam', 'ängstlich'],
+  'ICH BRAUCHE': ['Hilfe', 'Wasser', 'Medizin', 'etwas', 'mehr', 'Zeit', 'Ruhe', 'jemanden', 'frische', 'meine'],
+  'ICH FREUE': ['mich'],
+  'ICH FREUE MICH': ['sehr', 'über', 'auf', 'wirklich'],
+  'ICH KANN': ['nicht', 'mich', 'das', 'heute', 'leider'],
+  'ICH WEISS': ['nicht', 'es', 'das'],
+  'ICH DENKE': ['an', 'das', 'nicht'],
+
+  // Nach "Bitte"
+  'BITTE': ['helfen', 'bringen', 'kommen', 'rufen', 'warten', 'mehr', 'nicht', 'öffnen', 'schließen', 'holen', 'bleiben'],
+  'BITTE BRINGEN': ['Sie', 'mir'],
+  'BITTE BRINGEN SIE': ['mir', 'bitte'],
+  'BITTE BRINGEN SIE MIR': ['Wasser', 'etwas', 'Tee', 'Kaffee', 'Essen', 'Saft', 'meine', 'die', 'ein'],
+  'BITTE KOMMEN': ['Sie', 'schnell', 'bitte'],
+  'BITTE RUFEN': ['Sie', 'einen'],
+  'BITTE RUFEN SIE': ['einen', 'bitte', 'die'],
+
+  // Nach "Danke"
+  'DANKE': ['sehr', 'für', 'schön', 'Ihnen', 'dir', 'vielmals', 'wirklich'],
+  'DANKE FÜR': ['alles', 'Ihre', 'die', 'den', 'Ihre Hilfe', 'das'],
+  'DANKE SEHR': ['für', '!', 'Ihnen'],
+  'DANKE VIELMALS': ['für', '!', 'Ihnen'],
+
+  // Nach "Hallo"
+  'HALLO': ['Ich', 'könnten', 'bitte', 'da', 'guten', 'schön'],
+
+  // Nach "Ja" / "Nein"
+  'JA': ['bitte', 'natürlich', 'sehr', 'gerne', 'danke', 'das', 'stimmt', 'genau'],
+  'NEIN': ['danke', 'bitte', 'nicht', 'das', 'leider', 'ich'],
+
+  // Nach "Mir"
+  'MIR': ['geht', 'ist', 'fehlt', 'tut', 'bitte', 'zu', 'war', 'wird'],
+  'MIR GEHT': ['es'],
+  'MIR GEHT ES': ['gut', 'schlecht', 'nicht', 'besser', 'heute', 'leider', 'wirklich'],
+  'MIR IST': ['kalt', 'warm', 'schlecht', 'übel', 'schwindelig', 'langweilig'],
+  'MIR TUT': ['alles', 'der', 'die', 'das', 'etwas', 'nichts'],
+  'MIR FEHLT': ['etwas', 'nichts', 'Gesellschaft', 'Wasser'],
+
+  // Nach "Könnten"
+  'KÖNNTEN': ['Sie', 'wir'],
+  'KÖNNTEN SIE': ['mir', 'bitte', 'kommen', 'helfen', 'das', 'einen', 'die', 'mein'],
+  'KÖNNTEN SIE MIR': ['bitte', 'helfen', 'Wasser', 'etwas', 'sagen', 'geben', 'holen'],
+  'KÖNNTEN SIE BITTE': ['kommen', 'mir', 'helfen', 'das', 'einen'],
+
+  // Nach "Es"
+  'ES': ['tut', 'ist', 'geht', 'war', 'gibt', 'freut'],
+  'ES TUT': ['mir', 'weh', 'leid'],
+  'ES IST': ['mir', 'kalt', 'warm', 'schön', 'gut', 'okay', 'zu'],
+  'ES FREUT': ['mich'],
+
+  // Nach "Heute"
+  'HEUTE': ['ist', 'bin', 'habe', 'fühle', 'möchte', 'war', 'geht'],
+
+  // Häufige Einzelwörter
+  'MÖCHTE': ['bitte', 'gerne', 'nicht', 'etwas', 'mehr', 'schlafen', 'essen', 'trinken', 'reden', 'ruhen', 'Hilfe'],
+  'GERNE': ['etwas', 'mehr', 'trinken', 'essen', 'schlafen', 'reden', 'sitzen', 'aufstehen'],
+  'HABE': ['Hunger', 'Durst', 'Schmerzen', 'Angst', 'Fieber', 'keine', 'kein', 'Kopfschmerzen'],
+  'HUNGER': ['Bitte', 'Könnten', '.', '!', 'und'],
+  'DURST': ['Bitte', 'Könnten', '.', '!', 'und'],
+  'SCHMERZEN': ['im', 'am', 'beim', 'Bitte', 'Können', 'in', 'überall'],
+  'MÜDE': ['Bitte', 'Ich', '.', 'und', 'sehr'],
+  'ERSCHÖPFT': ['Bitte', 'Ich', '.', 'sehr'],
+  'GUT': ['Danke', '.', '!', 'und', 'sehr', 'wirklich'],
+  'SCHLECHT': ['Mir', 'Bitte', '.', 'leider', 'sehr'],
+  'BESSER': ['Danke', '.', '!', 'als', 'heute'],
+  'NICHT': ['gut', 'mehr', 'verstanden', 'okay', 'schlafen', 'essen', 'aufstehen', 'allein'],
+  'MEHR': ['Wasser', 'Essen', 'Zeit', 'bitte', 'davon', 'Ruhe', 'Licht'],
+  'ETWAS': ['zu', 'trinken', 'essen', 'anderes', 'mehr', 'Kaltes', 'Warmes'],
+  'WASSER': ['bitte', '.', '!', 'Danke'],
+  'TEE': ['bitte', 'mit', 'ohne', '.'],
+  'KAFFEE': ['bitte', 'mit', 'ohne', '.'],
+  'HILFE': ['bitte', '!', 'Ich', 'brauche'],
+  'BITTE': ['helfen', 'bringen', 'kommen', 'mehr', 'nicht', 'etwas', 'öffnen', 'warten'],
+  'LEIDER': ['nicht', 'bin', 'habe', 'kann', 'geht'],
+  'SEHR': ['gut', 'schlecht', 'müde', 'dankbar', 'schön', 'schmerzhaft'],
+  'HEUTE': ['ist', 'bin', 'habe', 'fühle', 'geht', 'war'],
+  'JETZT': ['bitte', 'nicht', 'sofort', 'gleich'],
+  'KALT': ['mir', 'ist', 'Bitte', 'zu'],
+  'WARM': ['mir', 'ist', 'Bitte', 'zu', 'hier'],
+};
+
+// ===== DB-LERNFUNKTION =====
+// Speichert DB-Vorschläge mit Gewichtung: DB-Wörter kommen zuerst,
+// dann werden hartcodierte Wörter als Ergänzung angehängt.
+const dbCache = {}; // { 'KONTEXT': ['wort1', 'wort2', ...] }
+
+function mergeWithDbSuggestions(contextKey, localSuggestions) {
+  const dbWords = dbCache[contextKey.toUpperCase()] || [];
+  if (dbWords.length === 0) return localSuggestions;
+
+  // DB-Wörter priorisiert vorne, lokale Wörter als Ergänzung hinten (ohne Duplikate)
+  const dbSet = new Set(dbWords.map(w => w.toLowerCase()));
+  const localOnly = localSuggestions.filter(w => !dbSet.has(w.toLowerCase()));
+  return [...dbWords, ...localOnly];
+}
+
+// Erkennt Tipp-Präfix für das aktuelle (unvollständige) Wort
+function getTypingMatches(prefix) {
+  if (!prefix) return [];
+  const p = prefix.toUpperCase();
+  const allWords = new Set();
+  Object.values(wordTree).flat().forEach(w => allWords.add(w));
+  // DB-Cache ebenfalls durchsuchen
+  Object.values(dbCache).flat().forEach(w => allWords.add(w));
+  Object.keys(wordTree).forEach(k => { if (!k.includes(' ')) allWords.add(k.charAt(0) + k.slice(1).toLowerCase()); });
+  return [...allWords].filter(w => w.toUpperCase().startsWith(p) && w.toUpperCase() !== p).slice(0, 12);
+}
+
+function getSuggestions(text) {
+  const trimmed = text.trimEnd();
+  const words = trimmed.split(/\s+/).filter(Boolean);
+
+  if (words.length === 0) {
+    return mergeWithDbSuggestions('', wordTree[''] || []);
+  }
+
+  const lastWord = words[words.length - 1];
+  const lastUpper = lastWord.toUpperCase();
+  const isTyping = !text.endsWith(' ');
+
+  if (isTyping) {
+    const completions = getTypingMatches(lastUpper);
+    if (words.length >= 2) {
+      const prevWord = words[words.length - 2].toUpperCase();
+      const afterPrev = wordTree[prevWord] || [];
+      const filteredAfter = afterPrev.filter(w => w.toUpperCase().startsWith(lastUpper) && w.toUpperCase() !== lastUpper);
+      return [...new Set([...completions, ...filteredAfter])].slice(0, 12);
+    }
+    return completions.slice(0, 12);
+  }
+
+  // Text endet mit Leerzeichen → Folgewörter, DB priorisiert
+  // Versuche längere Kontexte zuerst (3 Wörter, 2 Wörter, 1 Wort)
+  if (words.length >= 3) {
+    const threeKey = words.slice(-3).map(w => w.toUpperCase()).join(' ');
+    const local = wordTree[threeKey];
+    if (local || dbCache[threeKey]) return mergeWithDbSuggestions(threeKey, local || []);
+  }
+  if (words.length >= 2) {
+    const twoKey = words.slice(-2).map(w => w.toUpperCase()).join(' ');
+    const local = wordTree[twoKey];
+    if (local || dbCache[twoKey]) return mergeWithDbSuggestions(twoKey, local || []);
+  }
+  const local = wordTree[lastUpper];
+  if (local || dbCache[lastUpper]) return mergeWithDbSuggestions(lastUpper, local || []);
+
+  // Fallback
+  return mergeWithDbSuggestions('FALLBACK', ['bitte', 'und', 'aber', 'nicht', 'sehr', 'heute', '.', '!', '?']);
+}
+
+function renderSuggestions() {
+  const container = document.getElementById('suggestions');
+  const sugg = getSuggestions(outputText);
+  container.innerHTML = '';
+  if (sugg.length === 0) return;
+
+  const isTyping = outputText.length > 0 && !outputText.endsWith(' ');
+
+  sugg.slice(0, 12).forEach(word => {
+    const chip = document.createElement('button');
+    chip.className = 'suggestion-chip';
+    chip.textContent = word;
+    // Visuell unterscheiden: Vervollständigung vs. Folgewort
+    if (isTyping) chip.classList.add('completion-chip');
+    chip.onclick = () => insertSuggestion(word, isTyping);
+    container.appendChild(chip);
+  });
+}
+
+function insertSuggestion(word, isCompletion) {
+  if (isCompletion) {
+    const parts = outputText.trimEnd().split(' ');
+    parts[parts.length - 1] = word;
+    outputText = parts.join(' ') + ' ';
+  } else {
+    // Kontext für DB-Tracking: letztes Wort vor dem neuen
+    const prevWords = outputText.trimEnd().split(/\s+/).filter(Boolean);
+    const contextKey = prevWords.slice(-2).join(' '); // max. 2 Wörter Kontext
+    trackEvent('word_click', null, 'word_suggestions', contextKey + ' → ' + word);
+    outputText = outputText + word + ' ';
+  }
+  updateOutput();
+}
+
+// ===== OUTPUT =====
+function updateOutput() {
+  const el = document.getElementById('output-display');
+  const speakBtn = document.getElementById('btn-speak');
+  if (outputText.trim() === '') {
+    el.innerHTML = '<span class="output-placeholder">Hier erscheint Ihre Nachricht …</span>';
+    el.classList.remove('has-text');
+    speakBtn.disabled = true;
+  } else {
+    el.textContent = outputText;
+    el.classList.add('has-text');
+    speakBtn.disabled = false;
+  }
+  renderSuggestions();
+  // API-Vorschläge wenn Online
+  if (API_ONLINE) fetchSuggestionsFromAPI();
+}
+
+function typeChar(ch) {
+  outputText += ch;
+  updateOutput();
+}
+
+function doBackspace() {
+  if (outputText.length > 0) {
+    outputText = outputText.slice(0, -1);
+    updateOutput();
+  }
+}
+
+function doClear() {
+  outputText = '';
+  updateOutput();
+}
+
+function appendToOutput(text) {
+  if (outputText.length > 0 && !outputText.endsWith(' ')) outputText += ' ';
+  outputText += text;
+  updateOutput();
+}
+
+// ===== TAB SWITCHING =====
+function switchTab(tab) {
+  document.getElementById('view-keyboard').classList.remove('active');
+  document.getElementById('view-themes').classList.remove('active');
+  document.getElementById('view-context').classList.remove('active');
+  document.getElementById('tab-keyboard').classList.remove('active');
+  document.getElementById('tab-themes').classList.remove('active');
+
+  if (tab === 'keyboard') {
+    document.getElementById('view-keyboard').classList.add('active');
+    document.getElementById('tab-keyboard').classList.add('active');
+  } else if (tab === 'themes') {
+    if (outputText.trim() !== '') { outputText = ''; updateOutput(); }
+    document.getElementById('view-themes').classList.add('active');
+    document.getElementById('tab-themes').classList.add('active');
+    currentTheme = null;
+    contextPath = [];
+  }
+}
+
+// ===== THEME DATA =====
+const themes = {
+  food: {
+    title: 'Essen & Trinken',
+    icon: '🍽️',
+    steps: {
+      start: {
+        type: 'options',
+        label: 'Was möchten Sie?',
+        options: [
+          { icon: '🍽️', text: 'Ich habe Hunger', next: 'hungry' },
+          { icon: '💧', text: 'Ich habe Durst', next: 'thirsty' },
+          { icon: '🙏', text: 'Ich möchte etwas bestimmtes', next: 'specific' },
+          { icon: '🚫', text: 'Ich mag das nicht', next: 'dislike' },
+          { icon: '😋', text: 'Das hat mir geschmeckt!', next: 'final', msg: 'Das hat mir sehr gut geschmeckt. Danke!' },
+        ]
+      },
+      hungry: {
+        type: 'yesno',
+        question: '🍽️\nKönnten Sie mir etwas zu essen bringen?',
+        yes: { msg: 'Bitte bringen Sie mir etwas zu essen. Ich habe Hunger.', next: 'final' },
+        no_next: 'hungry_what',
+        no_label: 'Ich sage, was ich möchte',
+      },
+      hungry_what: {
+        type: 'options',
+        label: 'Was möchten Sie essen?',
+        options: [
+          { icon: '🍞', text: 'Brot oder Brötchen', next: 'final', msg: 'Ich möchte bitte Brot oder ein Brötchen.' },
+          { icon: '🥣', text: 'Suppe', next: 'final', msg: 'Ich hätte gerne Suppe, bitte.' },
+          { icon: '🥗', text: 'Salat oder leichtes Essen', next: 'final', msg: 'Ich würde gerne etwas Leichtes essen, zum Beispiel Salat.' },
+          { icon: '🍰', text: 'Kuchen oder etwas Süßes', next: 'final', msg: 'Ich hätte gerne etwas Süßes, zum Beispiel Kuchen.' },
+        ]
+      },
+      thirsty: {
+        type: 'options',
+        label: 'Was möchten Sie trinken?',
+        options: [
+          { icon: '💧', text: 'Wasser', next: 'final', msg: 'Bitte bringen Sie mir ein Glas Wasser.' },
+          { icon: '☕', text: 'Tee', next: 'tea' },
+          { icon: '☕', text: 'Kaffee', next: 'final', msg: 'Ich möchte gerne einen Kaffee, bitte.' },
+          { icon: '🥤', text: 'Saft', next: 'final', msg: 'Bitte einen Saft. Danke.' },
+        ]
+      },
+      tea: {
+        type: 'yesno',
+        question: '☕\nMöchten Sie den Tee mit Milch oder Zucker?',
+        yes: { msg: 'Ich möchte Tee, bitte mit Milch und Zucker.', next: 'final' },
+        no_label: 'Nein, schwarz bitte',
+        no_next: 'final',
+        no_msg: 'Ich möchte bitte einen Tee, ohne Milch und ohne Zucker.',
+      },
+      specific: {
+        type: 'options',
+        label: 'Möchten Sie etwas sagen?',
+        options: [
+          { icon: '🌡️', text: 'Das Essen ist zu heiß', next: 'final', msg: 'Das Essen ist mir zu heiß. Bitte warten Sie kurz.' },
+          { icon: '❄️', text: 'Das Essen ist kalt', next: 'final', msg: 'Das Essen ist leider kalt. Könnten Sie es aufwärmen?' },
+          { icon: '🧂', text: 'Mehr Salz / Gewürz', next: 'final', msg: 'Ich würde gerne etwas mehr Salz oder Gewürz haben.' },
+          { icon: '😐', text: 'Ich bin noch nicht fertig', next: 'final', msg: 'Ich bin noch nicht fertig mit dem Essen, bitte noch nicht abräumen.' },
+        ]
+      },
+      dislike: {
+        type: 'yesno',
+        question: '😕\nKönnen Sie mir etwas anderes bringen?',
+        yes: { msg: 'Das mag ich leider nicht. Können Sie mir bitte etwas anderes bringen?', next: 'final' },
+        no_label: 'Ich esse es trotzdem',
+        no_next: 'final',
+        no_msg: 'Das schmeckt mir nicht so gut, aber ich esse es trotzdem.',
+      },
+      final: { type: 'final' }
+    }
+  },
+
+  social: {
+    title: 'Soziales & Gemeinschaft',
+    icon: '👥',
+    steps: {
+      start: {
+        type: 'options',
+        label: 'Was möchten Sie ausdrücken?',
+        options: [
+          { icon: '😊', text: 'Ich fühle mich gut', next: 'good' },
+          { icon: '😔', text: 'Mir geht es nicht so gut', next: 'notgood' },
+          { icon: '👨‍👩‍👧', text: 'Ich möchte jemanden sehen', next: 'visitors' },
+          { icon: '📺', text: 'Ich möchte etwas unternehmen', next: 'activity' },
+          { icon: '🙏', text: 'Ich möchte Danke sagen', next: 'thanks' },
+          { icon: '😴', text: 'Ich möchte Ruhe / schlafen', next: 'final', msg: 'Ich bin müde und möchte gerne etwas ruhen. Bitte nicht stören.' },
+        ]
+      },
+      good: {
+        type: 'options',
+        label: 'Möchten Sie mehr sagen?',
+        options: [
+          { icon: '😁', text: 'Ich bin heute sehr gut gelaunt!', next: 'final', msg: 'Ich bin heute sehr gut gelaunt. Mir geht es wirklich gut!' },
+          { icon: '☀️', text: 'Das schöne Wetter freut mich', next: 'final', msg: 'Das schöne Wetter freut mich sehr!' },
+          { icon: '💝', text: 'Ich freue mich über Besuch', next: 'final', msg: 'Es freut mich sehr, Sie zu sehen!' },
+          { icon: '✅', text: 'Nur: Mir geht es gut. Danke.', next: 'final', msg: 'Mir geht es gut. Danke der Nachfrage!' },
+        ]
+      },
+      notgood: {
+        type: 'yesno',
+        question: '😔\nHaben Sie Schmerzen oder körperliche Beschwerden?',
+        yes: { msg: 'Ich habe Schmerzen oder fühle mich körperlich nicht wohl. Bitte helfen Sie mir.', next: 'final' },
+        no_label: 'Nein, eher traurig/einsam',
+        no_next: 'notgood_emotional',
+      },
+      notgood_emotional: {
+        type: 'options',
+        label: 'Was fühlen Sie?',
+        options: [
+          { icon: '😢', text: 'Ich bin traurig', next: 'final', msg: 'Ich bin gerade traurig. Ich würde mich über Gesellschaft freuen.' },
+          { icon: '😟', text: 'Ich mache mir Sorgen', next: 'final', msg: 'Ich mache mir Sorgen. Könnten wir darüber sprechen?' },
+          { icon: '😤', text: 'Ich bin unruhig / nervös', next: 'final', msg: 'Ich bin gerade unruhig und nervös. Ich brauche etwas Ablenkung oder Ruhe.' },
+          { icon: '🌧️', text: 'Ich brauche jemanden zum Reden', next: 'final', msg: 'Ich würde gerne mit jemandem reden. Haben Sie etwas Zeit für mich?' },
+        ]
+      },
+      visitors: {
+        type: 'options',
+        label: 'Wen möchten Sie sehen?',
+        options: [
+          { icon: '👨‍👩‍👧', text: 'Meine Familie', next: 'final', msg: 'Ich würde mich sehr freuen, meine Familie zu sehen. Können Sie sie kontaktieren?' },
+          { icon: '👫', text: 'Einen Freund / eine Freundin', next: 'final', msg: 'Ich würde gerne einen guten Freund oder eine Freundin sehen. Könnten Sie helfen, jemanden zu erreichen?' },
+          { icon: '👩‍⚕️', text: 'Einen Arzt / eine Ärztin', next: 'final', msg: 'Ich möchte gerne mit einem Arzt oder einer Ärztin sprechen.' },
+          { icon: '🧑‍💼', text: 'Jemanden vom Personal', next: 'final', msg: 'Könnten Sie bitte jemanden vom Personal zu mir schicken?' },
+        ]
+      },
+      activity: {
+        type: 'options',
+        label: 'Was möchten Sie tun?',
+        options: [
+          { icon: '📺', text: 'Fernsehen', next: 'final', msg: 'Ich würde gerne fernsehen. Können Sie mir helfen, den Fernseher einzuschalten?' },
+          { icon: '🎵', text: 'Musik hören', next: 'final', msg: 'Ich möchte gerne Musik hören. Könnten Sie bitte Musik anmachen?' },
+          { icon: '🌿', text: 'Draußen / frische Luft', next: 'final', msg: 'Ich würde gerne etwas frische Luft schnappen. Können wir kurz rausgehen oder ein Fenster öffnen?' },
+          { icon: '🃏', text: 'Spielen / Beschäftigung', next: 'final', msg: 'Ich würde mich gerne beschäftigen. Haben Sie ein Spiel oder etwas zum Lesen für mich?' },
+        ]
+      },
+      thanks: {
+        type: 'options',
+        label: 'Wofür möchten Sie danken?',
+        options: [
+          { icon: '🙏', text: 'Danke für Ihre Fürsorge', next: 'final', msg: 'Ich möchte Danke sagen für Ihre tolle Fürsorge. Das bedeutet mir sehr viel!' },
+          { icon: '💝', text: 'Danke für den schönen Besuch', next: 'final', msg: 'Vielen Dank für Ihren Besuch! Es hat mich sehr gefreut.' },
+          { icon: '😊', text: 'Danke, mir geht es viel besser', next: 'final', msg: 'Danke für alles! Mir geht es jetzt viel besser.' },
+          { icon: '⭐', text: 'Sie machen einen tollen Job!', next: 'final', msg: 'Ich möchte Ihnen sagen, dass Sie einen wirklich tollen Job machen. Danke!' },
+        ]
+      },
+      final: { type: 'final' }
+    }
+  }
+};
+
+// ===== CONTEXT NAVIGATION =====
+let finalMessage = '';
+
+function openTheme(themeKey) {
+  currentTheme = themeKey;
+  contextPath = ['start'];
+  finalMessage = '';
+
+  trackEvent('theme_open', null, 'themes', themeKey);
+
+  document.getElementById('view-themes').classList.remove('active');
+  document.getElementById('view-context').classList.add('active');
+  document.getElementById('tab-themes').classList.remove('active');
+
+  renderContextStep('start');
+}
+
+function renderContextStep(stepKey, overrideMsg) {
+  const theme = themes[currentTheme];
+  const step = theme.steps[stepKey];
+  currentStep = stepKey;
+
+  document.getElementById('ctx-title').textContent = theme.title;
+  renderBreadcrumb();
+
+  const content = document.getElementById('ctx-content');
+  content.innerHTML = '';
+  content.className = 'fade-in';
+  void content.offsetWidth;
+  content.className = 'fade-in';
+
+  if (step.type === 'final') {
+    const msg = overrideMsg || finalMessage;
+    if (msg) {
+      appendToOutput(msg);
+      trackEvent('sentence_complete', null, 'theme_options', `${currentTheme} → ${msg.substring(0, 80)}`);
+    }
+
+    content.innerHTML = `
+      <div class="final-msg fade-in">
+        <div class="msg-icon">✅</div>
+        <div class="msg-text">${msg || 'Ihre Nachricht wurde übernommen.'}</div>
+      </div>
+      <br>
+      <button class="btn-vorlesen" onclick="speakText()">🔊 Vorlesen</button>
+      <br>
+      <button class="btn-restart" onclick="restartTheme()">↩ Neues Thema wählen</button>
+    `;
+    return;
+  }
+
+  if (step.type === 'options') {
+    content.innerHTML = `<div class="context-phase-label fade-in">${step.label || ''}</div><br>`;
+    const grid = document.createElement('div');
+    grid.className = 'options-grid fade-in';
+    step.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerHTML = `<span class="opt-icon">${opt.icon}</span><span>${opt.text}</span>`;
+      btn.onclick = () => {
+        trackEvent('option_click', null, 'theme_options', `${currentTheme} / ${stepKey} → ${opt.text}`);
+        if (opt.msg) finalMessage = opt.msg;
+        if (opt.next === 'final') {
+          renderContextStep('final', opt.msg);
+        } else {
+          contextPath.push(opt.next);
+          renderContextStep(opt.next);
+        }
+      };
+      grid.appendChild(btn);
+    });
+    content.appendChild(grid);
+  }
+
+  if (step.type === 'yesno') {
+    const qEl = document.createElement('div');
+    qEl.className = 'yesno-question fade-in';
+    const parts = step.question.split('\n');
+    qEl.innerHTML = `<span class="q-icon">${parts[0]}</span>${parts.slice(1).join(' ')}`;
+    content.appendChild(qEl);
+
+    const grid = document.createElement('div');
+    grid.className = 'yesno-grid fade-in';
+
+    const yesBtn = document.createElement('button');
+    yesBtn.className = 'btn-yes';
+    yesBtn.innerHTML = `<span class="btn-icon-large">✅</span>Ja`;
+    yesBtn.onclick = () => {
+      trackEvent('option_click', null, 'theme_options', `${currentTheme} / ${stepKey} → JA`);
+      finalMessage = step.yes.msg;
+      contextPath.push('final');
+      renderContextStep('final', step.yes.msg);
+    };
+
+    const noBtn = document.createElement('button');
+    noBtn.className = 'btn-no';
+    noBtn.innerHTML = `<span class="btn-icon-large">❌</span>${step.no_label || 'Nein'}`;
+    noBtn.onclick = () => {
+      trackEvent('option_click', null, 'theme_options', `${currentTheme} / ${stepKey} → NEIN`);
+      if (step.no_msg) finalMessage = step.no_msg;
+      if (step.no_next === 'final') {
+        renderContextStep('final', step.no_msg || '');
+      } else {
+        contextPath.push(step.no_next);
+        renderContextStep(step.no_next);
+      }
+    };
+
+    grid.appendChild(yesBtn);
+    grid.appendChild(noBtn);
+    content.appendChild(grid);
+  }
+}
+
+function renderBreadcrumb() {
+  const theme = themes[currentTheme];
+  const bc = document.getElementById('ctx-breadcrumb');
+  bc.innerHTML = '';
+
+  const crumbs = [{ label: theme.title, idx: -1 }];
+  const labels = { start: 'Start', hungry: 'Hunger', thirsty: 'Trinken', specific: 'Details', dislike: 'Mag ich nicht', tea: 'Tee', good: 'Gut gelaunt', notgood: 'Nicht gut', notgood_emotional: 'Gefühle', visitors: 'Besuch', activity: 'Aktivität', thanks: 'Danke' };
+  contextPath.forEach((p, i) => { if (labels[p]) crumbs.push({ label: labels[p], idx: i }); });
+
+  crumbs.forEach((c, i) => {
+    const span = document.createElement('span');
+    span.className = 'breadcrumb-item' + (i === crumbs.length - 1 ? ' current' : '');
+    span.textContent = c.label;
+    bc.appendChild(span);
+    if (i < crumbs.length - 1) {
+      const sep = document.createElement('span');
+      sep.className = 'breadcrumb-sep';
+      sep.textContent = '›';
+      bc.appendChild(sep);
+    }
+  });
+}
+
+function goBack() {
+  if (contextPath.length <= 1) {
+    // Go back to themes
+    document.getElementById('view-context').classList.remove('active');
+    document.getElementById('view-themes').classList.add('active');
+    document.getElementById('tab-themes').classList.add('active');
+    currentTheme = null;
+    contextPath = [];
+  } else {
+    contextPath.pop();
+    renderContextStep(contextPath[contextPath.length - 1]);
+  }
+}
+
+function goHome() {
+  // Ausgabe leeren
+  outputText = '';
+  updateOutput();
+  // Alle Views zurücksetzen → Themen als Heimansicht
+  document.getElementById('view-context').classList.remove('active');
+  document.getElementById('view-keyboard').classList.remove('active');
+  document.getElementById('view-themes').classList.add('active');
+  document.getElementById('tab-keyboard').classList.remove('active');
+  document.getElementById('tab-themes').classList.add('active');
+  currentTheme = null;
+  contextPath = [];
+  renderSuggestions();
+}
+
+function restartTheme() {
+  outputText = '';
+  updateOutput();
+  document.getElementById('view-context').classList.remove('active');
+  document.getElementById('view-themes').classList.add('active');
+  document.getElementById('tab-themes').classList.add('active');
+  currentTheme = null;
+  contextPath = [];
+}
+
+// ===== NEUE THEMEN: Körperhygiene, Schmerzen, Gefühle =====
+themes.hygiene = {
+  title: 'Körperhygiene',
+  icon: '🚿',
+  steps: {
+    start: {
+      type: 'options', label: 'Was benötigen Sie?',
+      options: [
+        { icon: '🚿', text: 'Ich möchte duschen / waschen',  next: 'shower' },
+        { icon: '🚽', text: 'Ich muss auf die Toilette',      next: 'toilet' },
+        { icon: '🦷', text: 'Ich möchte Zähne putzen',       next: 'final', msg: 'Ich würde gerne meine Zähne putzen. Können Sie mir helfen?' },
+        { icon: '💈', text: 'Ich möchte meine Haare kämmen', next: 'final', msg: 'Könnten Sie mir bitte helfen, meine Haare zu kämmen?' },
+        { icon: '🧴', text: 'Ich brauche Creme / Pflege',    next: 'final', msg: 'Ich brauche bitte etwas Creme oder Pflegemittel.' },
+        { icon: '👕', text: 'Ich möchte frische Kleidung',   next: 'final', msg: 'Ich würde gerne frische Kleidung anziehen.' },
+      ]
+    },
+    shower: {
+      type: 'yesno', question: '🚿\nBenötigen Sie Hilfe beim Waschen?',
+      yes: { msg: 'Ich möchte gerne duschen oder waschen und brauche dabei Hilfe. Könnten Sie bitte kommen?', next: 'final' },
+      no_label: 'Ich schaffe es allein',
+      no_next: 'final', no_msg: 'Ich würde gerne duschen oder waschen. Ich versuche es selbst, aber bitte schauen Sie nach mir.',
+    },
+    toilet: {
+      type: 'yesno', question: '🚽\nBenötigen Sie Hilfe oder Begleitung?',
+      yes: { msg: 'Ich muss dringend auf die Toilette und brauche Hilfe. Bitte kommen Sie schnell!', next: 'final' },
+      no_label: 'Nein, nur kurz Bescheid geben',
+      no_next: 'final', no_msg: 'Ich muss kurz auf die Toilette. Ich wollte nur Bescheid geben.',
+    },
+    final: { type: 'final' }
+  }
+};
+
+themes.pain = {
+  title: 'Schmerzen & Wohlbefinden',
+  icon: '😣',
+  steps: {
+    start: {
+      type: 'options', label: 'Wo haben Sie Schmerzen?',
+      options: [
+        { icon: '🤕', text: 'Kopfschmerzen',       next: 'intensity', msg: 'Ich habe Kopfschmerzen.' },
+        { icon: '💔', text: 'Brustschmerzen',       next: 'urgent' },
+        { icon: '🦴', text: 'Rücken- oder Gelenkschmerzen', next: 'intensity', msg: 'Ich habe Schmerzen im Rücken oder in den Gelenken.' },
+        { icon: '🤢', text: 'Mir ist übel / Bauch', next: 'intensity', msg: 'Mir ist schlecht oder ich habe Bauchschmerzen.' },
+        { icon: '😵', text: 'Mir ist schwindelig',  next: 'final', msg: 'Mir ist schwindelig. Bitte helfen Sie mir, mich hinzusetzen oder zu legen.' },
+        { icon: '🌡️', text: 'Ich glaube, ich habe Fieber', next: 'final', msg: 'Ich glaube, ich habe Fieber. Könnten Sie bitte meine Temperatur messen?' },
+      ]
+    },
+    urgent: {
+      type: 'yesno', question: '💔\nSind die Brustschmerzen stark oder plötzlich aufgetreten?',
+      yes: { msg: 'ICH HABE STARKE BRUSTSCHMERZEN! Bitte rufen Sie sofort einen Arzt oder Notarzt!', next: 'final' },
+      no_label: 'Nein, leicht und schon länger',
+      no_next: 'intensity', no_msg: 'Ich habe leichte Brustschmerzen, die schon etwas länger bestehen.',
+    },
+    intensity: {
+      type: 'options', label: 'Wie stark sind die Schmerzen?',
+      options: [
+        { icon: '😐', text: 'Leicht – kaum spürbar',    next: 'final', msg: 'Die Schmerzen sind leicht, aber störend. Bitte beobachten Sie mich.' },
+        { icon: '😣', text: 'Mittel – ziemlich unangenehm', next: 'final', msg: 'Ich habe ziemlich starke Schmerzen. Bitte informieren Sie jemanden.' },
+        { icon: '😭', text: 'Stark – ich brauche Hilfe!', next: 'final', msg: 'Ich habe sehr starke Schmerzen! Bitte holen Sie sofort Hilfe und einen Arzt!' },
+      ]
+    },
+    final: { type: 'final' }
+  }
+};
+
+themes.feelings = {
+  title: 'Gefühle & Stimmung',
+  icon: '💛',
+  steps: {
+    start: {
+      type: 'options', label: 'Wie fühlen Sie sich gerade?',
+      options: [
+        { icon: '😊', text: 'Ich bin glücklich / dankbar', next: 'happy' },
+        { icon: '😔', text: 'Ich bin traurig',             next: 'sad' },
+        { icon: '😟', text: 'Ich mache mir Sorgen',        next: 'worried' },
+        { icon: '😤', text: 'Ich bin unruhig / ängstlich', next: 'anxious' },
+        { icon: '😴', text: 'Ich bin erschöpft / müde',    next: 'final', msg: 'Ich bin sehr müde und erschöpft. Ich brauche Ruhe.' },
+        { icon: '😠', text: 'Ich bin frustriert',          next: 'frustrated' },
+      ]
+    },
+    happy: {
+      type: 'options', label: 'Möchten Sie mehr sagen?',
+      options: [
+        { icon: '🌟', text: 'Heute ist ein guter Tag!',   next: 'final', msg: 'Heute ist wirklich ein sehr guter Tag! Ich fühle mich wohl.' },
+        { icon: '🙏', text: 'Ich bin so dankbar für alles', next: 'final', msg: 'Ich bin sehr dankbar für alles, was Sie für mich tun.' },
+        { icon: '💝', text: 'Ich denke an liebe Menschen', next: 'final', msg: 'Ich denke gerade an Menschen, die mir wichtig sind. Das macht mich glücklich.' },
+      ]
+    },
+    sad: {
+      type: 'yesno', question: '😔\nMöchten Sie darüber sprechen?',
+      yes: { msg: 'Ich bin gerade traurig und würde gerne darüber reden. Haben Sie ein paar Minuten für mich?', next: 'final' },
+      no_label: 'Nein, nur Bescheid geben',
+      no_next: 'final', no_msg: 'Ich bin heute etwas traurig. Ich wollte nur, dass jemand weiß, wie es mir geht.',
+    },
+    worried: {
+      type: 'options', label: 'Worüber machen Sie sich Sorgen?',
+      options: [
+        { icon: '👨‍👩‍👧', text: 'Um meine Familie',          next: 'final', msg: 'Ich mache mir Sorgen um meine Familie. Kann ich jemanden kontaktieren?' },
+        { icon: '💊', text: 'Um meine Gesundheit',         next: 'final', msg: 'Ich mache mir Sorgen um meine Gesundheit. Ich würde gerne mit einem Arzt sprechen.' },
+        { icon: '🤔', text: 'Ich weiß es nicht genau',    next: 'final', msg: 'Ich fühle mich unruhig und mache mir Sorgen, aber ich kann nicht genau sagen warum. Könnten wir reden?' },
+      ]
+    },
+    anxious: {
+      type: 'yesno', question: '😤\nBrauchen Sie jetzt jemanden bei sich?',
+      yes: { msg: 'Ich bin sehr unruhig und ängstlich. Bitte bleiben Sie bei mir oder schicken Sie jemanden.', next: 'final' },
+      no_label: 'Nein, nur kurze Ablenkung',
+      no_next: 'final', no_msg: 'Ich bin etwas ängstlich. Vielleicht hilft etwas Ablenkung – Musik oder Fernsehen?',
+    },
+    frustrated: {
+      type: 'options', label: 'Was frustriert Sie?',
+      options: [
+        { icon: '🗣️', text: 'Ich kann mich nicht gut ausdrücken', next: 'final', msg: 'Ich bin frustriert, weil ich mich schlecht ausdrücken kann. Bitte haben Sie Geduld mit mir.' },
+        { icon: '⏳', text: 'Ich muss zu lange warten',          next: 'final', msg: 'Ich warte schon sehr lange und bin ungeduldig. Könnten Sie mir sagen, wann es weitergeht?' },
+        { icon: '🙅', text: 'Niemand versteht mich',             next: 'final', msg: 'Ich habe das Gefühl, dass niemand mich versteht. Das macht mich sehr traurig.' },
+      ]
+    },
+    final: { type: 'final' }
+  }
+};
+
+// Baut das Themen-Grid neu auf (nach DB-Laden)
+function renderThemeGrid() {
+  const grid = document.querySelector('.themes-grid');
+  if (!grid) return;
+
+  // CSS-Klassen für bekannte Themen
+  const cssClass = { food: 'theme-food', social: 'theme-social', hygiene: 'theme-hygiene', pain: 'theme-pain', feelings: 'theme-feelings' };
+  // Kurze Beschreibungen
+  const desc = { food: 'Hunger, Durst, Wünsche', social: 'Gemeinschaft, Familie', hygiene: 'Waschen, Pflege, Toilette', pain: 'Lokalisieren & beschreiben', feelings: 'Stimmung & Wohlbefinden' };
+
+  grid.innerHTML = '';
+  for (const [key, theme] of Object.entries(themes)) {
+    const card = document.createElement('div');
+    card.className = 'theme-card ' + (cssClass[key] || 'theme-food');
+    card.onclick = () => openTheme(key);
+    card.innerHTML = `
+      <div class="icon">${theme.icon}</div>
+      <div class="label">${theme.title}</div>
+      <div class="desc">${desc[key] || ''}</div>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+// ===== API-ANBINDUNG =====
+// API_BASE auf Ihre Domain setzen, z.B. 'https://ihre-domain.de/api'
+const API_BASE = '';  // Leer = nur lokaler Modus (Prototyp)
+let API_ONLINE = false;
+
+// Konvertiert DB-Format → Frontend-Format
+// yesno-Steps: 2 Options in DB → yes/no_next/no_label im Frontend
+function adaptThemeFromDB(dbTheme, stepsMap) {
+  const adapted = {
+    title: dbTheme.title,
+    icon:  dbTheme.icon,
+    steps: {}
+  };
+
+  for (const [stepKey, step] of Object.entries(stepsMap)) {
+    if (step.type === 'final') {
+      adapted.steps[stepKey] = { type: 'final' };
+
+    } else if (step.type === 'options') {
+      adapted.steps[stepKey] = {
+        type: 'options',
+        label: step.label || '',
+        options: (step.options || []).map(o => ({
+          icon: o.icon,
+          text: o.text,
+          next: o.next_step,
+          msg:  o.final_msg || undefined
+        }))
+      };
+
+    } else if (step.type === 'yesno') {
+      // In DB: Option 1 = Ja, Option 2 = Nein
+      const opts = step.options || [];
+      const yesOpt = opts[0];
+      const noOpt  = opts[1];
+      adapted.steps[stepKey] = {
+        type:      'yesno',
+        question:  step.question || '',
+        yes: {
+          msg:  yesOpt ? yesOpt.final_msg : '',
+          next: 'final'
+        },
+        no_label: noOpt ? noOpt.text : 'Nein',
+        no_next:  noOpt ? noOpt.next_step : 'final',
+        no_msg:   noOpt ? noOpt.final_msg : ''
+      };
+    }
+  }
+  return adapted;
+}
+
+async function loadThemesFromAPI() {
+  if (!API_BASE) return;
+  try {
+    // Alle Themen laden
+    const listRes = await fetch(API_BASE + '/?action=themes', { signal: AbortSignal.timeout(3000) });
+    if (!listRes.ok) return;
+    const listData = await listRes.json();
+    API_ONLINE = true;
+
+    // Jeden Themenpfad einzeln laden und ins Frontend-Format konvertieren
+    const themeKeys = (listData.themes || []).map(t => t.key);
+    for (const key of themeKeys) {
+      try {
+        const r = await fetch(`${API_BASE}/?action=theme&key=${key}`, { signal: AbortSignal.timeout(3000) });
+        if (!r.ok) continue;
+        const data = await r.json();
+        if (data.theme && data.steps) {
+          // DB-Daten überschreiben den hardcodierten JS-Baum
+          themes[key] = adaptThemeFromDB(data.theme, data.steps);
+        }
+      } catch {}
+    }
+
+    // Themen-Grid neu rendern mit aktuellen Daten
+    renderThemeGrid();
+
+  } catch { API_ONLINE = false; }
+}
+
+function checkApiStatus() {
+  // Wird jetzt durch loadThemesFromAPI ersetzt
+  loadThemesFromAPI();
+}
+
+let apiDebounce = null;
+async function fetchSuggestionsFromAPI() {
+  if (!API_ONLINE || !API_BASE) return;
+  clearTimeout(apiDebounce);
+  apiDebounce = setTimeout(async () => {
+    const words = outputText.trimEnd().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return;
+
+    // Kontexte die wir abfragen (von spezifisch zu allgemein)
+    const contexts = [];
+    if (words.length >= 3) contexts.push(words.slice(-3).join(' '));
+    if (words.length >= 2) contexts.push(words.slice(-2).join(' '));
+    contexts.push(words[words.length - 1]);
+
+    for (const context of contexts) {
+      try {
+        const r = await fetch(`${API_BASE}/?action=suggestions&context=${encodeURIComponent(context)}`);
+        const data = await r.json();
+        if (data.suggestions && data.suggestions.length > 0) {
+          // In DB-Cache speichern (Schlüssel immer Großbuchstaben)
+          dbCache[context.toUpperCase()] = data.suggestions;
+        }
+      } catch {}
+    }
+    // Neu rendern mit DB-Daten
+    renderSuggestions();
+  }, 350);
+}
+
+async function trackEvent(eventType, refId, refTable, context) {
+  if (!API_ONLINE || !API_BASE) return;
+  try {
+    await fetch(`${API_BASE}/?action=track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event_type: eventType, ref_id: refId, ref_table: refTable, context }),
+    });
+  } catch {}
+}
+
+// ===== TEXT-TO-SPEECH =====
+let ttsUtterance = null;
+
+function speakText() {
+  if (!('speechSynthesis' in window)) {
+    alert('Text-to-Speech wird von diesem Browser leider nicht unterstützt.');
+    return;
+  }
+  const text = outputText.trim();
+  if (!text) return;
+
+  const btn = document.getElementById('btn-speak');
+
+  // Falls gerade spricht: stoppen
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    btn.classList.remove('speaking');
+    btn.textContent = '🔊';
+    return;
+  }
+
+  ttsUtterance = new SpeechSynthesisUtterance(text);
+  ttsUtterance.lang = 'de-DE';
+  ttsUtterance.rate = 0.88;   // etwas langsamer für bessere Verständlichkeit
+  ttsUtterance.pitch = 1.0;
+  ttsUtterance.volume = 1.0;
+
+  // Deutsche Stimme bevorzugen
+  const voices = window.speechSynthesis.getVoices();
+  const deVoice = voices.find(v => v.lang.startsWith('de') && v.localService) ||
+                  voices.find(v => v.lang.startsWith('de'));
+  if (deVoice) ttsUtterance.voice = deVoice;
+
+  ttsUtterance.onstart = () => {
+    btn.classList.add('speaking');
+    btn.textContent = '⏹️';
+  };
+  ttsUtterance.onend = ttsUtterance.onerror = () => {
+    btn.classList.remove('speaking');
+    btn.textContent = '🔊';
+  };
+
+  window.speechSynthesis.speak(ttsUtterance);
+  trackEvent('sentence_complete', null, null, text);
+}
+
+// Stimmen laden (asynchron im Browser)
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+// ===== QUERFORMAT-ERKENNUNG =====
+const MIN_WIDTH = 500; // px – unter dieser Breite im Hochformat → Hinweis
+
+function checkOrientation() {
+  const overlay = document.getElementById('rotate-overlay');
+  const isPortrait = window.innerHeight > window.innerWidth;
+  const isTooNarrow = window.innerWidth < MIN_WIDTH;
+
+  if (isPortrait && isTooNarrow) {
+    overlay.classList.add('visible');
+  } else {
+    overlay.classList.remove('visible');
+  }
+}
+
+window.addEventListener('resize', checkOrientation);
+window.addEventListener('orientationchange', () => {
+  // Kurz warten bis Browser das Layout aktualisiert hat
+  setTimeout(checkOrientation, 200);
+});
+
+// Beim Laden prüfen
+checkOrientation();
+
+// ===== GRÖSSENSKALIERUng =====
+function applyScale(val) {
+  const s = val / 100;
+  const root = document.documentElement;
+  // Schriftgröße: Basis 16px skaliert
+  root.style.fontSize = (16 * s) + 'px';
+  // Tasten & Buttons
+  root.style.setProperty('--key-h',      Math.round(62 * s) + 'px');
+  root.style.setProperty('--key-min-w',  Math.round(62 * s) + 'px');
+  root.style.setProperty('--key-max-w',  Math.round(80 * s) + 'px');
+  root.style.setProperty('--btn-round',  Math.round(54 * s) + 'px');
+}
+
+const slider = document.getElementById('size-slider');
+const savedScale = localStorage.getItem('ms_scale');
+if (savedScale) {
+  slider.value = savedScale;
+  applyScale(parseInt(savedScale));
+}
+slider.addEventListener('input', () => {
+  applyScale(parseInt(slider.value));
+  localStorage.setItem('ms_scale', slider.value);
+});
+
+// ===== SERVICE WORKER (PWA) =====
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .catch(() => {}); // Fehler still ignorieren
+  });
+}
+
+// ===== INIT =====
+checkApiStatus();
+renderSuggestions();
+</script>
+</body>
+</html>
