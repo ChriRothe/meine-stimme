@@ -636,6 +636,40 @@
     50% { box-shadow: 0 4px 32px rgba(22,163,74,0.75); }
   }
 
+  /* Extension chips on final screen */
+  .ext-chips-wrap {
+    margin-top: 18px;
+    margin-bottom: 4px;
+  }
+  .ext-chips-label {
+    font-size: 0.72rem;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .ext-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ext-chip {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1.5px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    font-size: calc(0.88rem * var(--scale));
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, transform 0.1s;
+    line-height: 1.3;
+  }
+  .ext-chip:hover { background: #e2e8f0; border-color: #94a3b8; }
+  .ext-chip:active { transform: scale(0.95); }
+  .ext-chip.used { background: #dbeafe; border-color: #93c5fd; color: #1e40af; }
+
   .btn-restart {
     width: 100%;
     padding: 14px;
@@ -1345,6 +1379,15 @@ function renderContextStep(stepKey, overrideMsg) {
       trackEvent('sentence_complete', null, 'theme_options', `${currentTheme} → ${msg.substring(0, 80)}`);
     }
 
+    // Ergänzungs-Chips: erst themenspezifisch, dann universal
+    const chips = [
+      ...(extensionChips[currentTheme] || []),
+      ...extensionChips.global
+    ];
+    const chipsHtml = chips.map((c, i) =>
+      `<button class="ext-chip" data-chip-idx="${i}">${c}</button>`
+    ).join('');
+
     content.innerHTML = `
       <div class="final-msg fade-in">
         <div class="msg-icon">✅</div>
@@ -1352,9 +1395,19 @@ function renderContextStep(stepKey, overrideMsg) {
       </div>
       <br>
       <button class="btn-vorlesen" onclick="speakText()">🔊 Vorlesen</button>
+      <div class="ext-chips-wrap">
+        <div class="ext-chips-label">Noch etwas ergänzen?</div>
+        <div class="ext-chips">${chipsHtml}</div>
+      </div>
       <br>
       <button class="btn-restart" onclick="restartTheme()">↩ Neues Thema wählen</button>
     `;
+
+    // Event-Listener nach innerHTML (verhindert Escaping-Probleme)
+    content.querySelectorAll('.ext-chip').forEach((btn, i) => {
+      btn.addEventListener('click', () => appendChip(chips[i], btn));
+    });
+
     return;
   }
 
@@ -1602,6 +1655,22 @@ themes.feelings = {
     final: { type: 'final' }
   }
 };
+
+// ===== EXTENSION CHIPS (Abschluss-Screen) =====
+const extensionChips = {
+  global:   ['Bitte', 'Danke', 'Danke schön!', 'Ja, bitte', 'Nein, danke', 'Bitte warten'],
+  food:     ['mit Butter', 'mit Marmelade', 'bitte warm', 'ohne Zucker', 'ein bisschen mehr', 'genug, danke'],
+  social:   ['Ich freue mich sehr', 'Bitte bleiben Sie noch', 'Bis bald!', 'Das ist sehr nett von Ihnen'],
+  hygiene:  ['Bitte vorsichtig', 'Das tut weh', 'Das ist angenehm', 'Danke für die Hilfe'],
+  pain:     ['Genau hier', 'Stärker als sonst', 'Es wird besser', 'Bitte Arzt rufen'],
+  feelings: ['Ich brauche Zeit', 'Das hilft mir', 'Danke fürs Zuhören', 'Ich bin nicht allein'],
+};
+
+function appendChip(text, btn) {
+  appendToOutput(text);
+  if (btn) btn.classList.add('used');
+  trackEvent('chip_click', null, 'extension_chips', text);
+}
 
 // Baut das Themen-Grid neu auf (nach DB-Laden)
 function renderThemeGrid() {
