@@ -5,27 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Impressum & Datenschutz – Meine Stimme</title>
 <style>
-  /* Lokale Schriftart – kein externer Aufruf */
+  /* Lokale Schriftart – kein externer Aufruf (DSGVO-konform) */
   @font-face {
-    font-family: 'Nunito';
+    font-family: 'Inter';
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('assets/fonts/nunito-v26-latin-regular.woff2') format('woff2');
+    src: url('assets/fonts/inter-latin-400-normal.woff2') format('woff2');
   }
   @font-face {
-    font-family: 'Nunito';
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('assets/fonts/inter-latin-500-normal.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('assets/fonts/inter-latin-600-normal.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Inter';
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('assets/fonts/nunito-v26-latin-700.woff2') format('woff2');
-  }
-  @font-face {
-    font-family: 'Nunito';
-    font-style: normal;
-    font-weight: 900;
-    font-display: swap;
-    src: url('assets/fonts/nunito-v26-latin-900.woff2') format('woff2');
+    src: url('assets/fonts/inter-latin-700-normal.woff2') format('woff2');
   }
 
   :root {
@@ -42,7 +49,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.7;
@@ -69,7 +76,7 @@
     border-radius: 50px;
     border: 2px solid var(--border);
     background: transparent;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 1rem;
     font-weight: 700;
     color: var(--text-soft);
@@ -220,8 +227,8 @@
       <circle cx="46" cy="12" r="2.5" fill="white" fill-opacity="0.9"/>
       <circle cx="52" cy="12" r="2.5" fill="white" fill-opacity="0.9"/>
       <circle cx="58" cy="12" r="2.5" fill="white" fill-opacity="0.9"/>
-      <text x="76" y="22" font-family="'Nunito',sans-serif" font-size="15" font-weight="400" fill="#3b82f6">Meine</text>
-      <text x="76" y="46" font-family="'Nunito',sans-serif" font-size="24" font-weight="900" fill="url(#tG)" letter-spacing="-0.5">Stimme</text>
+      <text x="76" y="22" font-family="'Inter',sans-serif" font-size="15" font-weight="400" fill="#3b82f6">Meine</text>
+      <text x="76" y="46" font-family="'Inter',sans-serif" font-size="24" font-weight="900" fill="url(#tG)" letter-spacing="-0.5">Stimme</text>
       <path d="M76 50 Q140 55 230 49" stroke="#3b82f6" stroke-width="2" fill="none" stroke-linecap="round" stroke-opacity="0.5"/>
     </svg>
   </div>
@@ -323,7 +330,7 @@
 
     <h3>Schriftarten</h3>
     <p>
-      Diese Website verwendet die Schriftart „Nunito", die <strong>lokal auf dem
+      Diese Website verwendet die Schriftart „Inter", die <strong>lokal auf dem
       Webserver gespeichert</strong> ist. Es findet keine Verbindung zu externen
       Schriftarten-Diensten (z.&nbsp;B. Google Fonts) statt. Beim Laden der Seite
       werden daher keine Daten an Dritte übermittelt.
@@ -346,7 +353,26 @@
 
     </div>
 
-  <!-- ===== OPEN SOURCE / LIZENZEN ===== -->
+  <!-- ===== OPEN SOURCE ===== -->
+  <div class="card">
+    <div class="card-title">🐙 Open Source</div>
+    <p>
+      „Meine Stimme" ist ein <strong>Open-Source-Projekt</strong>. Der vollständige
+      Quellcode ist öffentlich zugänglich und kann frei eingesehen, genutzt und
+      weiterentwickelt werden.
+    </p>
+    <div class="highlight-box">
+      📂 GitHub-Repository:&nbsp;
+      <a href="https://github.com/ChriRothe/meine-stimme" target="_blank" rel="noopener"
+         style="color:#1d4ed8;">github.com/ChriRothe/meine-stimme</a>
+    </div>
+    <p>
+      Wer selbst eine ähnliche Kommunikationshilfe betreiben, den Code anpassen
+      oder zum Projekt beitragen möchte, ist herzlich willkommen.
+    </p>
+  </div>
+
+  <!-- ===== LIZENZEN ===== -->
   <div class="card">
     <div class="card-title">⚖️ Verwendete Technologien & Lizenzen</div>
     <p>
@@ -356,7 +382,7 @@
     <ul style="margin: 8px 0 12px 20px; line-height: 2;">
       <li><strong>HTML5, CSS3, JavaScript</strong> – Web-Standardtechnologien, keine Lizenz erforderlich</li>
       <li><strong>PHP &amp; MySQL/MariaDB</strong> – Open Source (GPL / LGPL)</li>
-      <li><strong>Schriftart „Nunito"</strong> – SIL Open Font License 1.1 (kostenfrei nutzbar, auch lokal)</li>
+      <li><strong>Schriftart „Inter"</strong> – SIL Open Font License 1.1 (kostenfrei nutzbar, lokal eingebunden)</li>
       <li><strong>Web Speech API</strong> – W3C-Standard, im Browser eingebaut, keine externe Abhängigkeit</li>
       <li><strong>Hosting: ALL-INKL.COM</strong> – neue medien münnich GmbH, 02742 Friedersdorf</li>
     </ul>
