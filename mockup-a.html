@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meine Stimme – Mockup A: Klinisch</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #f4f6f9;
+    color: #1a1f2e;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: #1a2744;
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: #3b6fd4;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+  .logo-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.02em;
+  }
+  .logo-text span {
+    color: #7aadff;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 2px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 3px;
+  }
+  .nav-tab {
+    padding: 5px 14px;
+    border-radius: 4px;
+    border: none;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .nav-tab.active {
+    background: white;
+    color: #1a2744;
+  }
+
+  .slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.6;
+  }
+  .slider-label { font-size: 0.7rem; color: white; font-weight: 500; }
+  input[type=range] {
+    width: 80px; height: 4px;
+    -webkit-appearance: none;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .impressum-link {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.35);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .impressum-link:hover { color: rgba(255,255,255,0.7); }
+
+  /* OUTPUT BAR */
+  .output-bar {
+    background: #1e3a6e;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 62px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .output-text {
+    flex: 1;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.45);
+    font-style: italic;
+  }
+  .output-text.has-text {
+    color: white;
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .btn-action {
+    width: 40px; height: 40px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-speak { background: #16a34a; color: white; }
+  .btn-speak:hover { background: #15803d; }
+  .btn-back { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+  .btn-clear { background: rgba(220,38,38,0.7); color: white; }
+  .btn-clear:hover { background: #dc2626; }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 12px;
+  }
+
+  /* THEME GRID */
+  .themes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .theme-card {
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.15s;
+    text-align: left;
+  }
+  .theme-card:hover {
+    border-color: #3b6fd4;
+    background: #f0f5ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59,111,212,0.12);
+  }
+
+  .theme-icon {
+    width: 44px; height: 44px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .icon-food { background: #fef3c7; }
+  .icon-social { background: #dcfce7; }
+  .icon-hygiene { background: #dbeafe; }
+  .icon-pain { background: #fee2e2; }
+  .icon-feelings { background: #ede9fe; }
+
+  .theme-info { flex: 1; }
+  .theme-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1f2e;
+    margin-bottom: 2px;
+  }
+  .theme-desc {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+  .theme-arrow {
+    color: #cbd5e1;
+    font-size: 1rem;
+  }
+
+  .theme-card.wide {
+    grid-column: 1 / -1;
+  }
+
+  /* Label */
+  .label-badge {
+    display: inline-block;
+    background: #eef2ff;
+    color: #3b6fd4;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🗣️</div>
+    <div class="logo-text">Meine <span>Stimme</span></div>
+  </div>
+  <div class="header-right">
+    <div class="nav-tabs">
+      <button class="nav-tab">⌨ Tippen</button>
+      <button class="nav-tab active">💬 Themen</button>
+    </div>
+    <div class="slider-wrap">
+      <span class="slider-label">A</span>
+      <input type="range" min="80" max="150" value="100">
+      <span class="slider-label" style="font-size:0.9rem">A</span>
+    </div>
+    <a href="#" class="impressum-link">Impressum</a>
+  </div>
+</header>
+
+<div class="output-bar">
+  <div class="output-text">Hier erscheint Ihre Nachricht …</div>
+  <button class="btn-action btn-speak" disabled>🔊</button>
+  <button class="btn-action btn-back">⌫</button>
+  <button class="btn-action btn-clear">✕</button>
+</div>
+
+<div class="main">
+  <div class="label-badge">Was möchten Sie mitteilen?</div>
+  <div class="themes-grid">
+    <div class="theme-card">
+      <div class="theme-icon icon-food">🍽️</div>
+      <div class="theme-info">
+        <div class="theme-title">Essen & Trinken</div>
+        <div class="theme-desc">Hunger, Durst, Wünsche</div>
+      </div>
+      <div class="theme-arrow">›</div>
+    </div>
+    <div class="theme-card">
+      <div class="theme-icon icon-social">👥</div>
+      <div class="theme-info">
+        <div class="theme-title">Soziales</div>
+        <div class="theme-desc">Gemeinschaft, Familie</div>
+      </div>
+      <div class="theme-arrow">›</div>
+    </div>
+    <div class="theme-card">
+      <div class="theme-icon icon-hygiene">🚿</div>
+      <div class="theme-info">
+        <div class="theme-title">Körperhygiene</div>
+        <div class="theme-desc">Waschen, Pflege, Toilette</div>
+      </div>
+      <div class="theme-arrow">›</div>
+    </div>
+    <div class="theme-card">
+      <div class="theme-icon icon-pain">😣</div>
+      <div class="theme-info">
+        <div class="theme-title">Schmerzen</div>
+        <div class="theme-desc">Lokalisieren & beschreiben</div>
+      </div>
+      <div class="theme-arrow">›</div>
+    </div>
+    <div class="theme-card wide">
+      <div class="theme-icon icon-feelings">💛</div>
+      <div class="theme-info">
+        <div class="theme-title">Gefühle</div>
+        <div class="theme-desc">Stimmung & Wohlbefinden</div>
+      </div>
+      <div class="theme-arrow">›</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

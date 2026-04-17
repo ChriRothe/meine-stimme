@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meine Stimme – Mockup B: Warm & Reduziert</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #ffffff;
+    color: #1c1c1e;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: #2d3748;
+    padding: 0 24px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    border-bottom: 3px solid #4a6fa5;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-text {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.01em;
+  }
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: #68d391;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 4px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+  }
+  .nav-tab {
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.15);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.45);
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .nav-tab.active {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.9);
+  }
+
+  .slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .slider-label { font-size: 0.68rem; color: rgba(255,255,255,0.4); font-weight: 600; }
+  input[type=range] {
+    width: 72px; height: 3px;
+    -webkit-appearance: none;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .impressum-link {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.25);
+    text-decoration: none;
+  }
+
+  /* OUTPUT BAR */
+  .output-bar {
+    background: #f7f8fa;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 64px;
+    flex-shrink: 0;
+  }
+  .output-text {
+    flex: 1;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: #9ca3af;
+    font-style: italic;
+  }
+  .output-text.has-text {
+    color: #1c1c1e;
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .btn-action {
+    width: 42px; height: 42px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-speak { background: #2d6a4f; color: white; }
+  .btn-speak:hover { background: #1b4332; }
+  .btn-back { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+  .btn-clear { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    background: white;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 16px;
+  }
+
+  /* THEME GRID */
+  .themes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .theme-card {
+    background: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+
+  .theme-card:hover {
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+  }
+
+  .theme-card.food { border-left-color: #d97706; }
+  .theme-card.food:hover { border-left-color: #b45309; }
+  .theme-card.social { border-left-color: #059669; }
+  .theme-card.social:hover { border-left-color: #047857; }
+  .theme-card.hygiene { border-left-color: #2563eb; }
+  .theme-card.hygiene:hover { border-left-color: #1d4ed8; }
+  .theme-card.pain { border-left-color: #dc2626; }
+  .theme-card.pain:hover { border-left-color: #b91c1c; }
+  .theme-card.feelings { border-left-color: #7c3aed; }
+  .theme-card.feelings:hover { border-left-color: #6d28d9; }
+
+  .theme-emoji {
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .theme-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1c1c1e;
+  }
+  .theme-desc {
+    font-size: 0.75rem;
+    color: #6b7280;
+    line-height: 1.4;
+  }
+
+  .theme-card.wide {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+  }
+  .theme-card.wide .theme-emoji { font-size: 1.6rem; margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-text">Meine Stimme<span class="logo-dot"></span></div>
+  </div>
+  <div class="header-right">
+    <div class="nav-tabs">
+      <button class="nav-tab">⌨ Tippen</button>
+      <button class="nav-tab active">💬 Themen</button>
+    </div>
+    <div class="slider-wrap">
+      <span class="slider-label">A</span>
+      <input type="range" min="80" max="150" value="100">
+      <span class="slider-label" style="font-size:0.85rem">A</span>
+    </div>
+    <a href="#" class="impressum-link">Impressum</a>
+  </div>
+</header>
+
+<div class="output-bar">
+  <div class="output-text">Hier erscheint Ihre Nachricht …</div>
+  <button class="btn-action btn-speak" disabled>🔊</button>
+  <button class="btn-action btn-back">⌫</button>
+  <button class="btn-action btn-clear">✕</button>
+</div>
+
+<div class="main">
+  <div class="section-label">Was möchten Sie mitteilen?</div>
+  <div class="themes-grid">
+    <div class="theme-card food">
+      <div class="theme-emoji">🍽️</div>
+      <div class="theme-title">Essen & Trinken</div>
+      <div class="theme-desc">Hunger, Durst, Wünsche</div>
+    </div>
+    <div class="theme-card social">
+      <div class="theme-emoji">👥</div>
+      <div class="theme-title">Soziales</div>
+      <div class="theme-desc">Gemeinschaft, Familie</div>
+    </div>
+    <div class="theme-card hygiene">
+      <div class="theme-emoji">🚿</div>
+      <div class="theme-title">Körperhygiene</div>
+      <div class="theme-desc">Waschen, Pflege, Toilette</div>
+    </div>
+    <div class="theme-card pain">
+      <div class="theme-emoji">😣</div>
+      <div class="theme-title">Schmerzen</div>
+      <div class="theme-desc">Lokalisieren & beschreiben</div>
+    </div>
+    <div class="theme-card feelings wide">
+      <div class="theme-emoji">💛</div>
+      <div class="theme-info">
+        <div class="theme-title">Gefühle</div>
+        <div class="theme-desc">Stimmung & Wohlbefinden</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
