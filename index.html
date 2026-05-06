@@ -470,19 +470,24 @@
   }
 
   .btn-back {
-    width: 48px; height: 48px;
-    border-radius: 50%;
+    height: 48px;
+    padding: 0 18px;
+    border-radius: 24px;
     border: 2px solid var(--border);
     background: var(--bg);
     color: var(--text);
-    font-size: 1.3rem;
+    font-size: calc(0.9rem * var(--scale));
+    font-family: inherit;
+    font-weight: 600;
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
     transition: all 0.15s;
     flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
   }
   .btn-back:hover { background: var(--primary); color: white; border-color: var(--primary); }
-  .btn-back:active { transform: scale(0.92); }
+  .btn-back:active { transform: scale(0.95); }
 
   .context-title { font-size: 1.3rem; font-weight: 800; color: var(--text); }
   .context-subtitle { font-size: 0.9rem; color: var(--text-soft); font-weight: 600; }
@@ -672,20 +677,20 @@
 
   .btn-restart {
     width: 100%;
-    padding: 14px;
+    padding: 16px;
     border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: white;
-    color: var(--text-soft);
+    border: 2px solid #4a6fa5;
+    background: #eef2f9;
+    color: #4a6fa5;
     font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: calc(1rem * var(--scale));
+    font-weight: 700;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 10px;
     transition: all 0.15s;
     box-shadow: none;
   }
-  .btn-restart:hover { background: #f3f4f6; color: var(--text); border-color: #d1d5db; }
+  .btn-restart:hover { background: #4a6fa5; color: white; border-color: #4a6fa5; }
   .btn-restart:active { transform: scale(0.97); }
 
   /* Scroll */
@@ -825,6 +830,9 @@
 
   <!-- KEYBOARD VIEW -->
   <div id="view-keyboard">
+    <div id="keyboard-hint" style="color:rgba(255,255,255,0.35);font-size:0.85rem;text-align:center;padding:6px 0 2px;letter-spacing:0.01em;">
+      Tippen Sie los — Wortvorschläge erscheinen automatisch
+    </div>
     <div class="suggestions" id="suggestions">
       <!-- filled dynamically -->
     </div>
@@ -912,7 +920,7 @@
   <!-- CONTEXT VIEW -->
   <div id="view-context">
     <div class="context-header">
-      <button class="btn-back" onclick="goBack()" id="btn-back-main">←</button>
+      <button class="btn-back" onclick="goBack()" id="btn-back-main">← Zurück</button>
       <div>
         <div class="context-title" id="ctx-title">Essen & Trinken</div>
         <div class="breadcrumb" id="ctx-breadcrumb"></div>
@@ -1132,14 +1140,17 @@ function insertSuggestion(word, isCompletion) {
 function updateOutput() {
   const el = document.getElementById('output-display');
   const speakBtn = document.getElementById('btn-speak');
+  const hint = document.getElementById('keyboard-hint');
   if (outputText.trim() === '') {
     el.innerHTML = '<span class="output-placeholder">Hier erscheint Ihre Nachricht …</span>';
     el.classList.remove('has-text');
     speakBtn.disabled = true;
+    if (hint) hint.style.display = 'block';
   } else {
     el.textContent = outputText;
     el.classList.add('has-text');
     speakBtn.disabled = false;
+    if (hint) hint.style.display = 'none';
   }
   renderSuggestions();
   // API-Vorschläge wenn Online
@@ -1181,7 +1192,6 @@ function switchTab(tab) {
     document.getElementById('view-keyboard').classList.add('active');
     document.getElementById('tab-keyboard').classList.add('active');
   } else if (tab === 'themes') {
-    if (outputText.trim() !== '') { outputText = ''; updateOutput(); }
     document.getElementById('view-themes').classList.add('active');
     document.getElementById('tab-themes').classList.add('active');
     currentTheme = null;
@@ -1379,11 +1389,14 @@ function renderContextStep(stepKey, overrideMsg) {
       trackEvent('sentence_complete', null, 'theme_options', `${currentTheme} → ${msg.substring(0, 80)}`);
     }
 
-    // Ergänzungs-Chips: erst themenspezifisch, dann universal
-    const chips = [
-      ...(extensionChips[currentTheme] || []),
-      ...extensionChips.global
-    ];
+    // Urgency-Detection: Großbuchstaben-Wörter (≥4 Zeichen) = Notfallmeldung
+    const urgentWords = (msg || '').split(/\s+/).filter(w => w.length >= 4 && w === w.toUpperCase() && /[A-ZÄÖÜ]{3}/.test(w));
+    const isUrgent = urgentWords.length >= 2;
+
+    // Ergänzungs-Chips: bei Notfall nur relevante, sonst themenspezifisch + universal
+    const chips = isUrgent
+      ? ['Bitte sofort kommen!', 'Es tut sehr weh', 'Bitte Arzt rufen', 'Hier', 'Hilfe']
+      : [...(extensionChips[currentTheme] || []), ...extensionChips.global];
     const chipsHtml = chips.map((c, i) =>
       `<button class="ext-chip" data-chip-idx="${i}">${c}</button>`
     ).join('');
